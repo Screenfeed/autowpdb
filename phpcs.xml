@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<ruleset name="AutoWPDB">
+	<description>Create and use custom database tables in WordPress.</description>
+
+	<arg name="extensions" value="php"/>
+	<!-- <arg value="s"/> -->
+
+	<file>.</file>
+
+	<exclude-pattern>report/*</exclude-pattern>
+	<exclude-pattern>vendor/*</exclude-pattern>
+
+	<!-- Check for cross-version support for PHP 7.0 and higher + WP 4.9.6 and higher. -->
+	<config name="testVersion" value="7.0-"/>
+	<config name="minimum_supported_wp_version" value="4.9.6"/>
+
+	<!-- Run against the PHPCompatibility ruleset dedicated to WP. -->
+	<rule ref="PHPCompatibilityWP">
+		<include-pattern>*\.php$</include-pattern>
+	</rule>
+
+	<!-- Run against the WordPress ruleset. -->
+	<rule ref="WordPress">
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+		<exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery"/>
+		<exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching"/>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+	</rule>
+
+	<!-- Run against the NeutronStandard ruleset. -->
+	<rule ref="NeutronStandard">
+		<exclude name="NeutronStandard.AssignAlign.DisallowAssignAlign.Aligned"/>
+		<exclude name="NeutronStandard.Functions.DisallowCallUserFunc.CallUserFunc"/>
+	</rule>
+</ruleset>

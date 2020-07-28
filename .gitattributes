@@ -1,2 +1,8 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Directories
+/.git export-ignore
+
+# Files
+/.editorconfig export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/composer.lock export-ignore

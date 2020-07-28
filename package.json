@@ -1,0 +1,12 @@
+{
+	"name": "autowpdb",
+	"description": "Create and use custom database tables in WordPress.",
+	"version": "0.1.0",
+	"homepage": "https://github.com/Screenfeed/autowpdb",
+	"license": "GPL-2.0",
+	"private": true,
+	"author": {
+		"name": "Grégory Viguier",
+		"url": "https://www.screenfeed.fr/"
+	}
+}
