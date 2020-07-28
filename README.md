@@ -14,6 +14,16 @@ Requires **php 7.0** and **WordPress 4.9.6**. With php 7.1+, can be used with Wo
 * Provide default values,
 * Cast and serialize values automatically.
 
+## How to install
+
+With composer:
+
+```
+"require": {
+	"screenfeed/autowpdb": "dev-master"
+},
+```
+
 ## How to use
 
 Create 2 classes and you’re ready:
