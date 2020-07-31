@@ -16,6 +16,7 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  *
  * @since 0.1
  * @uses  $GLOBALS['wpdb']
+ * @uses  ABSPATH
  * @uses  dbDelta()
  * @uses  esc_sql()
  * @uses  remove_accents()
@@ -56,7 +57,7 @@ class DBUtilities {
 		}
 
 		if ( ! self::table_exists( $table_name ) ) {
-			// The table does not exists (wtf).
+			// The table does not exist (wtf).
 			empty( $logger ) || call_user_func( $logger, sprintf( 'Creation of the DB table %s failed.', $table_name ) );
 			return false;
 		}

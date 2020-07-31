@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Screenfeed\AutoWPDB;
 
 use Screenfeed\AutoWPDB\Table;
+use Screenfeed\AutoWPDB\TableDefinition\TableDefinitionInterface;
 
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
 
@@ -26,6 +27,8 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  * @uses  update_option()
  * @uses  delete_site_option()
  * @uses  delete_option()
+ * @uses  wp_should_upgrade_global_tables()
+ * @uses  apply_filters()
  */
 class TableUpgrader {
 
@@ -238,8 +241,41 @@ class TableUpgrader {
 			return;
 		}
 
+		if ( ! $this->table_is_allowed_to_upgrade() ) {
+			$this->set_table_not_ready();
+			return;
+		}
+
 		// Create/Upgrade the table.
 		$this->upgrade_table();
+	}
+
+	/**
+	 * Tell if the table is allowed to be created/upgraded.
+	 *
+	 * @since 0.2
+	 *
+	 * @return bool
+	 */
+	public function table_is_allowed_to_upgrade(): bool {
+		$allowed          = true;
+		$table_version    = $this->get_db_version();
+		$table_definition = $this->table->get_table_definition();
+
+		if ( ! empty( $table_version ) && $table_definition->is_table_global() && ! wp_should_upgrade_global_tables() ) {
+			// The table exists, is global, but upgrade of the global tables is forbidden.
+			$allowed = false;
+		}
+
+		/**
+		 * Tell if the table is allowed to be created/upgraded.
+		 *
+		 * @since 0.2
+		 *
+		 * @param bool                     $allowed          True when the table is allowed to be created/upgraded. False otherwise.
+		 * @param TableDefinitionInterface $table_definition An instance of the TableDefinitionInterface used.
+		 */
+		return (bool) apply_filters( 'screenfeed_autowpdb_table_is_allowed_to_upgrade', $allowed, $table_definition );
 	}
 
 	/**
