@@ -9,6 +9,9 @@ declare( strict_types=1 );
 
 namespace Screenfeed\AutoWPDB\TableDefinition;
 
+use JsonSerializable;
+use Screenfeed\AutoWPDB\DBUtilities;
+
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
 
 /**
@@ -16,8 +19,18 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  *
  * @since 0.1
  * @uses  $GLOBALS['wpdb']
+ * @uses  DBUtilities
+ * @uses  wp_json_encode()
  */
-abstract class AbstractTableDefinition implements TableDefinitionInterface {
+abstract class AbstractTableDefinition implements TableDefinitionInterface, JsonSerializable {
+
+	/**
+	 * The (prefixed) table name.
+	 *
+	 * @var   string|null
+	 * @since 0.1
+	 */
+	protected $full_table_name;
 
 	/**
 	 * Get the table name.
@@ -29,8 +42,51 @@ abstract class AbstractTableDefinition implements TableDefinitionInterface {
 	public function get_table_name(): string {
 		global $wpdb;
 
+		if ( ! empty( $this->full_table_name ) ) {
+			return $this->full_table_name;
+		}
+
 		$prefix = $this->is_table_global() ? $wpdb->base_prefix : $wpdb->prefix;
 
-		return $prefix . $this->get_table_short_name();
+		$this->full_table_name = $prefix . DBUtilities::sanitize_table_name( $this->get_table_short_name() );
+
+		return $this->full_table_name;
+	}
+
+	/**
+	 * Convert the current object to an array.
+	 *
+	 * @since 0.2
+	 *
+	 * @return array<mixed> Array representation of the current object.
+	 */
+	public function jsonSerialize(): array {
+		return [
+			'table_version'       => $this->get_table_version(),
+			'table_short_name'    => $this->get_table_short_name(),
+			'table_name'          => $this->get_table_name(),
+			'table_is_global'     => $this->is_table_global(),
+			'primary_key'         => $this->get_primary_key(),
+			'column_placeholders' => $this->get_column_placeholders(),
+			'column_defaults'     => $this->get_column_defaults(),
+			'table_schema'        => $this->get_table_schema(),
+		];
+	}
+
+	/**
+	 * Convert the current object to a string.
+	 *
+	 * @since 0.2
+	 *
+	 * @return string String representation of the current object. An empty string on error.
+	 */
+	public function __toString(): string {
+		$string = wp_json_encode( $this );
+
+		if ( false === $string ) {
+			return '';
+		}
+
+		return $string;
 	}
 }
