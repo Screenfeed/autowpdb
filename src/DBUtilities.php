@@ -89,20 +89,29 @@ class DBUtilities {
 	 * @since  0.2
 	 * @source inspired from https://github.com/berlindb/core/blob/734f799e04a9ce86724f2d906b1a6e0fc56fdeb4/table.php#L404-L427.
 	 *
-	 * @param  string $table_name Full name of the table (with DB prefix). Use `sanitize_table_name()` before passing it to this method.
-	 * @return bool               True on success. False otherwise.
+	 * @param  string       $table_name Full name of the table (with DB prefix). Use `sanitize_table_name()` before passing it to this method.
+	 * @param  array<mixed> $args {
+	 *     Optional arguments.
+	 *
+	 *     @var callable $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. Default is 'error_log'.
+	 * }
+	 * @return bool                     True on success. False otherwise.
 	 */
-	public static function delete_table( string $table_name ): bool {
+	public static function delete_table( string $table_name, array $args = [] ): bool {
 		global $wpdb;
+
+		$logger = isset( $args['logger'] ) ? $args['logger'] : 'error_log';
 
 		$query  = "DROP TABLE `$table_name`";
 		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		if ( true !== $result ) {
+		if ( true !== $result || self::table_exists( $table_name ) ) {
+			// The table still exists.
+			empty( $logger ) || call_user_func( $logger, sprintf( 'Deletion of the DB table %s failed.', $table_name ) );
 			return false;
 		}
 
-		return ! static::table_exists( $table_name );
+		return true;
 	}
 
 	/**

@@ -84,9 +84,14 @@ class Table {
 	 *
 	 * @since  0.2
 	 *
+	 * @param  array<mixed> $args {
+	 *     Optional arguments.
+	 *
+	 *     @var callable $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. Default is 'error_log'.
+	 * }
 	 * @return bool True on success. False otherwise.
 	 */
-	public function delete(): bool {
+	public function delete( array $args = [] ): bool {
 		return DBUtilities::delete_table( $this->table_definition->get_table_name() );
 	}
 
