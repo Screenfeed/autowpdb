@@ -175,7 +175,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 	 */
 	protected function get_placeholder( string $column ): string {
 		$columns = $this->table_definition->get_column_placeholders();
-		return isset( $columns[ $column ] ) ? $columns[ $column ] : '%s';
+		return $columns[ $column ] ?? '%s';
 	}
 
 	/**
@@ -188,7 +188,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 	 */
 	protected function get_default_value( string $column ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoReturnType
 		$columns = $this->table_definition->get_column_defaults();
-		return isset( $columns[ $column ] ) ? $columns[ $column ] : null;
+		return $columns[ $column ] ?? null;
 	}
 
 	/**

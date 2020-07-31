@@ -47,7 +47,7 @@ class DBUtilities {
 
 		$wpdb->hide_errors();
 
-		$logger          = isset( $args['logger'] ) ? $args['logger'] : 'error_log';
+		$logger          = $args['logger'] ?? 'error_log';
 		$charset_collate = $wpdb->get_charset_collate();
 
 		dbDelta( "CREATE TABLE `$table_name` ($schema_query) $charset_collate;" );
@@ -106,7 +106,7 @@ class DBUtilities {
 	public static function delete_table( string $table_name, array $args = [] ): bool {
 		global $wpdb;
 
-		$logger = isset( $args['logger'] ) ? $args['logger'] : 'error_log';
+		$logger = $args['logger'] ?? 'error_log';
 
 		$query  = "DROP TABLE `$table_name`";
 		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
