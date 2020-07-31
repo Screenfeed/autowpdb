@@ -102,7 +102,7 @@ class TableUpgrader {
 		if ( ! $this->table_is_up_to_date() ) {
 			/**
 			 * The option doesn't exist or is not up-to-date: we must upgrade the table before declaring it ready.
-			 * See self::maybe_upgrade_table() for the upgrade.
+			 * See $this->maybe_upgrade_table() for the upgrade.
 			 */
 			return;
 		}
@@ -124,17 +124,6 @@ class TableUpgrader {
 		}
 
 		add_action( $this->upgrade_hook, [ $this, 'maybe_upgrade_table' ], $this->upgrade_hook_prio );
-	}
-
-	/**
-	 * Tell if the table is ready to be used.
-	 *
-	 * @since 0.1
-	 *
-	 * @return bool
-	 */
-	public function table_is_ready(): bool {
-		return $this->table_ready;
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -294,6 +283,41 @@ class TableUpgrader {
 		// Table successfully created/upgraded.
 		$this->set_table_ready();
 		$this->update_db_version();
+	}
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** TABLE DELETION ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Delete the table from the database.
+	 *
+	 * @since 0.1
+	 *
+	 * @return void
+	 */
+	public function delete_table() {
+		if ( ! $this->table->delete() ) {
+			return;
+		}
+
+		$this->set_table_not_ready();
+		$this->delete_db_version();
+	}
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** TABLE READY ============================================================================= */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Tell if the table is ready to be used.
+	 *
+	 * @since 0.1
+	 *
+	 * @return bool
+	 */
+	public function table_is_ready(): bool {
+		return $this->table_ready;
 	}
 
 	/**
