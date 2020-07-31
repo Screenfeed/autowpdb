@@ -17,6 +17,8 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  * @since 0.1
  * @uses  $GLOBALS['wpdb']
  * @uses  ABSPATH
+ * @uses  WP_DEBUG
+ * @uses  WP_DEBUG_LOG
  * @uses  dbDelta()
  * @uses  esc_sql()
  * @uses  remove_accents()
@@ -34,7 +36,7 @@ class DBUtilities {
 	 * @param  array<mixed> $args {
 	 *     Optional arguments.
 	 *
-	 *     @var callable $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. Default is 'error_log'.
+	 *     @var callable|false $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Default is 'error_log'.
 	 * }
 	 * @return bool                       True on success. False otherwise.
 	 */
@@ -52,13 +54,17 @@ class DBUtilities {
 
 		if ( ! empty( $wpdb->last_error ) ) {
 			// The query returned an error.
-			empty( $logger ) || call_user_func( $logger, sprintf( 'Error while creating the DB table %s: %s', $table_name, $wpdb->last_error ) );
+			if ( static::can_log( $logger ) ) {
+				call_user_func( $logger, sprintf( 'Error while creating the DB table %s: %s', $table_name, $wpdb->last_error ) );
+			}
 			return false;
 		}
 
 		if ( ! self::table_exists( $table_name ) ) {
 			// The table does not exist (wtf).
-			empty( $logger ) || call_user_func( $logger, sprintf( 'Creation of the DB table %s failed.', $table_name ) );
+			if ( static::can_log( $logger ) ) {
+				call_user_func( $logger, sprintf( 'Creation of the DB table %s failed.', $table_name ) );
+			}
 			return false;
 		}
 
@@ -93,7 +99,7 @@ class DBUtilities {
 	 * @param  array<mixed> $args {
 	 *     Optional arguments.
 	 *
-	 *     @var callable $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. Default is 'error_log'.
+	 *     @var callable|false $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Default is 'error_log'.
 	 * }
 	 * @return bool                     True on success. False otherwise.
 	 */
@@ -107,7 +113,9 @@ class DBUtilities {
 
 		if ( true !== $result || self::table_exists( $table_name ) ) {
 			// The table still exists.
-			empty( $logger ) || call_user_func( $logger, sprintf( 'Deletion of the DB table %s failed.', $table_name ) );
+			if ( static::can_log( $logger ) ) {
+				call_user_func( $logger, sprintf( 'Deletion of the DB table %s failed.', $table_name ) );
+			}
 			return false;
 		}
 
@@ -297,5 +305,29 @@ class DBUtilities {
 	 */
 	public static function quote_string( $value ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType, NeutronStandard.Functions.TypeHint.NoReturnType
 		return is_numeric( $value ) || ! is_string( $value ) ? $value : "'" . addcslashes( $value, "'" ) . "'";
+	}
+
+	/**
+	 * Wrap a value in quotes, unless it is a numeric value.
+	 *
+	 * @since 0.2
+	 *
+	 * @param  callable|false $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Default is 'error_log'.
+	 * @return bool
+	 */
+	protected static function can_log( $logger ): bool { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType
+		if ( empty( $logger ) ) {
+			return false;
+		}
+
+		if ( ! defined( 'WP_DEBUG' ) || empty( WP_DEBUG ) ) {
+			return false;
+		}
+
+		if ( ! defined( 'WP_DEBUG_LOG' ) || empty( WP_DEBUG_LOG ) ) {
+			return false;
+		}
+
+		return true;
 	}
 }
