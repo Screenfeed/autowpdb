@@ -33,10 +33,10 @@ class DBUtilities {
 	 *
 	 * @param  string       $table_name   The (prefixed) table name. Use `sanitize_table_name()` before passing it to this method.
 	 * @param  string       $schema_query Query representing the table schema.
-	 * @param  array<mixed> $args {
+	 * @param  array<mixed> $args         {
 	 *     Optional arguments.
 	 *
-	 *     @var callable|false $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Default is 'error_log'.
+	 *     @var callable|false|null $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Null will default to 'error_log'.
 	 * }
 	 * @return bool                       True on success. False otherwise.
 	 */
@@ -96,10 +96,10 @@ class DBUtilities {
 	 * @source inspired from https://github.com/berlindb/core/blob/734f799e04a9ce86724f2d906b1a6e0fc56fdeb4/table.php#L404-L427.
 	 *
 	 * @param  string       $table_name Full name of the table (with DB prefix). Use `sanitize_table_name()` before passing it to this method.
-	 * @param  array<mixed> $args {
+	 * @param  array<mixed> $args       {
 	 *     Optional arguments.
 	 *
-	 *     @var callable|false $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Default is 'error_log'.
+	 *     @var callable|false|null $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Null will default to 'error_log'.
 	 * }
 	 * @return bool                     True on success. False otherwise.
 	 */
@@ -312,7 +312,7 @@ class DBUtilities {
 	 *
 	 * @since 0.2
 	 *
-	 * @param  callable|false $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Default is 'error_log'.
+	 * @param  callable|false $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log.
 	 * @return bool
 	 */
 	protected static function can_log( $logger ): bool { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType
@@ -325,6 +325,10 @@ class DBUtilities {
 		}
 
 		if ( ! defined( 'WP_DEBUG_LOG' ) || empty( WP_DEBUG_LOG ) ) {
+			return false;
+		}
+
+		if ( ! is_callable( $logger ) ) {
 			return false;
 		}
 

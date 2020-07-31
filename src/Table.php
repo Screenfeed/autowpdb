@@ -60,7 +60,7 @@ class Table {
 	 * @param  array<mixed> $args {
 	 *     Optional arguments.
 	 *
-	 *     @var callable $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. Default is 'error_log'.
+	 *     @var callable|false|null $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Null will default to 'error_log'.
 	 * }
 	 * @return bool True on success. False otherwise.
 	 */
@@ -87,7 +87,7 @@ class Table {
 	 * @param  array<mixed> $args {
 	 *     Optional arguments.
 	 *
-	 *     @var callable $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. Default is 'error_log'.
+	 *     @var callable|false|null $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Null will default to 'error_log'.
 	 * }
 	 * @return bool True on success. False otherwise.
 	 */

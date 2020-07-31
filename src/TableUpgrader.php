@@ -72,7 +72,7 @@ class TableUpgrader {
 	protected $upgrade_hook_prio;
 
 	/**
-	 * Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Default is 'error_log'.
+	 * Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Null will default to 'error_log'.
 	 *
 	 * @var callable|false|null
 	 * @since 0.1
