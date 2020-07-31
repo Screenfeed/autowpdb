@@ -289,7 +289,6 @@ class TableUpgrader {
 		if ( ! $this->table->create() ) {
 			// Failure.
 			$this->set_table_not_ready();
-			$this->delete_db_version();
 			return;
 		}
 
