@@ -9,8 +9,7 @@ declare( strict_types=1 );
 
 namespace Screenfeed\AutoWPDB;
 
-use Screenfeed\AutoWPDB\DBUtilities;
-use Screenfeed\AutoWPDB\TableDefinition\TableDefinitionInterface;
+use Screenfeed\AutoWPDB\Table;
 
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
 
@@ -19,6 +18,14 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  *
  * @since 0.1
  * @uses  DBUtilities
+ * @uses  add_action()
+ * @uses  is_multisite()
+ * @uses  get_site_option()
+ * @uses  get_option()
+ * @uses  update_site_option()
+ * @uses  update_option()
+ * @uses  delete_site_option()
+ * @uses  delete_option()
  */
 class TableUpgrader {
 
@@ -31,9 +38,9 @@ class TableUpgrader {
 	const TABLE_VERSION_OPTION_SUFFIX = '_db_version';
 
 	/**
-	 * A TableDefinitionInterface object.
+	 * A Table object.
 	 *
-	 * @var   TableDefinitionInterface
+	 * @var   Table
 	 * @since 0.1
 	 */
 	protected $table;
@@ -75,8 +82,8 @@ class TableUpgrader {
 	 *
 	 * @since 0.1
 	 *
-	 * @param TableDefinitionInterface $table A TableDefinitionInterface object.
-	 * @param array<mixed>             $args  {
+	 * @param Table        $table A Table object.
+	 * @param array<mixed> $args  {
 	 *     Optional arguments.
 	 *
 	 *     @var bool   $handle_downgrade  Set to true to allow table downgrade. Default is false.
@@ -84,7 +91,7 @@ class TableUpgrader {
 	 *     @var int    $upgrade_hook_prio Priority for the hook that will trigger the table creation/upgrade. Default is 8.
 	 * }
 	 */
-	public function __construct( TableDefinitionInterface $table, array $args = [] ) {
+	public function __construct( Table $table, array $args = [] ) {
 		$this->table             = $table;
 		$this->handle_downgrade  = ! empty( $args['handle_downgrade'] );
 		$this->upgrade_hook      = isset( $args['upgrade_hook'] ) ? $args['upgrade_hook'] : 'admin_menu';
@@ -147,10 +154,10 @@ class TableUpgrader {
 		}
 
 		if ( $this->handle_downgrade ) {
-			return $table_version !== $this->table->get_table_version();
+			return $table_version !== $this->table->get_table_definition()->get_table_version();
 		}
 
-		return $table_version >= $this->table->get_table_version();
+		return $table_version >= $this->table->get_table_definition()->get_table_version();
 	}
 
 	/**
@@ -161,7 +168,7 @@ class TableUpgrader {
 	 * @return int The version. 0 if not set yet.
 	 */
 	public function get_db_version(): int {
-		if ( $this->table->is_table_global() && is_multisite() ) {
+		if ( $this->table->get_table_definition()->is_table_global() && is_multisite() ) {
 			return (int) get_site_option( $this->get_db_version_option_name() );
 		}
 
@@ -176,10 +183,12 @@ class TableUpgrader {
 	 * @return void
 	 */
 	protected function update_db_version() {
-		if ( $this->table->is_table_global() && is_multisite() ) {
-			update_site_option( $this->get_db_version_option_name(), $this->table->get_table_version() );
+		$table_definition = $this->table->get_table_definition();
+
+		if ( $table_definition->is_table_global() && is_multisite() ) {
+			update_site_option( $this->get_db_version_option_name(), $table_definition->get_table_version() );
 		} else {
-			update_option( $this->get_db_version_option_name(), $this->table->get_table_version() );
+			update_option( $this->get_db_version_option_name(), $table_definition->get_table_version() );
 		}
 	}
 
@@ -191,7 +200,7 @@ class TableUpgrader {
 	 * @return void
 	 */
 	protected function delete_db_version() {
-		if ( $this->table->is_table_global() && is_multisite() ) {
+		if ( $this->table->get_table_definition()->is_table_global() && is_multisite() ) {
 			delete_site_option( $this->get_db_version_option_name() );
 		} else {
 			delete_option( $this->get_db_version_option_name() );
@@ -206,7 +215,7 @@ class TableUpgrader {
 	 * @return string
 	 */
 	public function get_db_version_option_name(): string {
-		return $this->table->get_table_short_name() . self::TABLE_VERSION_OPTION_SUFFIX;
+		return $this->table->get_table_definition()->get_table_short_name() . self::TABLE_VERSION_OPTION_SUFFIX;
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -241,7 +250,7 @@ class TableUpgrader {
 	 * @return void
 	 */
 	public function upgrade_table() {
-		if ( ! DBUtilities::create_table( $this->table->get_table_name(), $this->table->get_table_schema() ) ) {
+		if ( ! $this->table->create() ) {
 			// Failure.
 			$this->set_table_not_ready();
 			$this->delete_db_version();
@@ -263,11 +272,12 @@ class TableUpgrader {
 	protected function set_table_ready() {
 		global $wpdb;
 
-		$table_short_name        = $this->table->get_table_short_name();
+		$table_definition        = $this->table->get_table_definition();
+		$table_short_name        = $table_definition->get_table_short_name();
 		$this->table_ready       = true;
-		$wpdb->$table_short_name = $this->table->get_table_name();
+		$wpdb->$table_short_name = $table_definition->get_table_name();
 
-		if ( $this->table->is_table_global() ) {
+		if ( $table_definition->is_table_global() ) {
 			$wpdb->global_tables[] = $table_short_name;
 		} else {
 			$wpdb->tables[] = $table_short_name;
@@ -284,11 +294,12 @@ class TableUpgrader {
 	protected function set_table_not_ready() {
 		global $wpdb;
 
-		$table_short_name  = $this->table->get_table_short_name();
+		$table_definition  = $this->table->get_table_definition();
+		$table_short_name  = $table_definition->get_table_short_name();
 		$this->table_ready = false;
 		unset( $wpdb->$table_short_name );
 
-		if ( $this->table->is_table_global() ) {
+		if ( $table_definition->is_table_global() ) {
 			$wpdb->global_tables = array_diff( $wpdb->global_tables, [ $table_short_name ] );
 		} else {
 			$wpdb->tables = array_diff( $wpdb->tables, [ $table_short_name ] );
