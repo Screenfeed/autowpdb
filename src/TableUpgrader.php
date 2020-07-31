@@ -72,6 +72,14 @@ class TableUpgrader {
 	protected $upgrade_hook_prio;
 
 	/**
+	 * Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Default is 'error_log'.
+	 *
+	 * @var callable|false|null
+	 * @since 0.1
+	 */
+	protected $logger;
+
+	/**
 	 * Tell if the table is ready to be used.
 	 *
 	 * @var   bool
@@ -88,9 +96,10 @@ class TableUpgrader {
 	 * @param array<mixed> $args  {
 	 *     Optional arguments.
 	 *
-	 *     @var bool   $handle_downgrade  Set to true to allow table downgrade. Default is false.
-	 *     @var string $upgrade_hook      Name of the hook that will trigger the table creation/upgrade. Use an empty string to not create the hook. Default is 'admin_menu'.
-	 *     @var int    $upgrade_hook_prio Priority for the hook that will trigger the table creation/upgrade. Default is 8.
+	 *     @var bool           $handle_downgrade  Set to true to allow table downgrade. Default is false.
+	 *     @var string         $upgrade_hook      Name of the hook that will trigger the table creation/upgrade. Use an empty string to not create the hook. Default is 'admin_menu'.
+	 *     @var int            $upgrade_hook_prio Priority for the hook that will trigger the table creation/upgrade. Default is 8.
+	 *     @var callable|false $logger            Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log. Default is 'error_log'.
 	 * }
 	 */
 	public function __construct( Table $table, array $args = [] ) {
@@ -98,6 +107,7 @@ class TableUpgrader {
 		$this->handle_downgrade  = ! empty( $args['handle_downgrade'] );
 		$this->upgrade_hook      = isset( $args['upgrade_hook'] ) ? $args['upgrade_hook'] : 'admin_menu';
 		$this->upgrade_hook_prio = isset( $args['upgrade_hook_prio'] ) ? (int) $args['upgrade_hook_prio'] : 8;
+		$this->logger            = isset( $args['logger'] ) ? $args['logger'] : null;
 
 		if ( ! $this->table_is_up_to_date() ) {
 			/**
@@ -274,7 +284,13 @@ class TableUpgrader {
 	 * @return void
 	 */
 	public function upgrade_table() {
-		if ( ! $this->table->create() ) {
+		$upgraded = $this->table->create(
+			[
+				'logger' => $this->logger,
+			]
+		);
+
+		if ( ! $upgraded ) {
 			// Failure.
 			$this->set_table_not_ready();
 			return;
@@ -297,7 +313,13 @@ class TableUpgrader {
 	 * @return void
 	 */
 	public function delete_table() {
-		if ( ! $this->table->delete() ) {
+		$deleted = $this->table->delete(
+			[
+				'logger' => $this->logger,
+			]
+		);
+
+		if ( ! $deleted ) {
 			return;
 		}
 
