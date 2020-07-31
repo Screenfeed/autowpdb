@@ -32,7 +32,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 	 * @var   TableDefinitionInterface
 	 * @since 0.1
 	 */
-	protected $table_definition;
+	private $table_definition;
 
 	/**
 	 * Stores the list of columns that must be (un)serialized.
