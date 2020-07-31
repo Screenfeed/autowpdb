@@ -18,7 +18,6 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  * Class that creates or upgrades a table automatically.
  *
  * @since 0.1
- * @uses  DBUtilities
  * @uses  add_action()
  * @uses  is_multisite()
  * @uses  get_site_option()
