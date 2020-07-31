@@ -92,7 +92,7 @@ class Table {
 	 * @return bool True on success. False otherwise.
 	 */
 	public function delete( array $args = [] ): bool {
-		return DBUtilities::delete_table( $this->table_definition->get_table_name() );
+		return DBUtilities::delete_table( $this->table_definition->get_table_name(), $args );
 	}
 
 	/**
