@@ -39,13 +39,13 @@ class Basic extends AbstractCRUD {
 		$data = $this->prepare_data_for_query( $data );
 
 		// Add default values to missing fields.
-		$data = array_merge( $this->serialize_columns( $this->table->get_column_defaults() ), $data );
+		$data = array_merge( $this->serialize_columns( $this->table_definition->get_column_defaults() ), $data );
 
 		// Remove the auto-increment columns.
 		$data = array_diff_key( $data, $this->get_auto_increment_columns() );
 
 		$wpdb->insert(
-			$this->table->get_table_name(),
+			$this->table_definition->get_table_name(),
 			$data,
 			$this->get_placeholders( $data )
 		);
@@ -69,10 +69,10 @@ class Basic extends AbstractCRUD {
 		$data = $this->prepare_data_for_query( $data );
 
 		// Add default values to missing fields.
-		$data = array_merge( $this->serialize_columns( $this->table->get_column_defaults() ), $data );
+		$data = array_merge( $this->serialize_columns( $this->table_definition->get_column_defaults() ), $data );
 
 		$wpdb->replace(
-			$this->table->get_table_name(),
+			$this->table_definition->get_table_name(),
 			$data,
 			$this->get_placeholders( $data )
 		);
@@ -108,7 +108,7 @@ class Basic extends AbstractCRUD {
 			return null;
 		}
 
-		$table = $this->table->get_table_name();
+		$table = $this->table_definition->get_table_name();
 		$where = $this->prepare_data_for_query( $where );
 
 		if ( ! empty( $where ) ) {
@@ -182,7 +182,7 @@ class Basic extends AbstractCRUD {
 		$where = $this->prepare_data_for_query( $where );
 
 		return $wpdb->update(
-			$this->table->get_table_name(),
+			$this->table_definition->get_table_name(),
 			$data,
 			$where,
 			$this->get_placeholders( $data ),
@@ -213,7 +213,7 @@ class Basic extends AbstractCRUD {
 		$where = $this->prepare_data_for_query( $where );
 
 		return $wpdb->delete(
-			$this->table->get_table_name(),
+			$this->table_definition->get_table_name(),
 			$where,
 			$this->get_placeholders( $where )
 		);

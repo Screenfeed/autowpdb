@@ -19,6 +19,10 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  * Abstract class that contains some tools to help interacting with the DB table.
  *
  * @since 0.1
+ * @uses  $GLOBALS['wpdb']
+ * @uses  esc_sql()
+ * @uses  maybe_unserialize()
+ * @uses  maybe_serialize()
  */
 abstract class AbstractCRUD implements CRUDInterface {
 
@@ -28,7 +32,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 	 * @var   TableDefinitionInterface
 	 * @since 0.1
 	 */
-	protected $table;
+	protected $table_definition;
 
 	/**
 	 * Stores the list of columns that must be (un)serialized.
@@ -60,12 +64,12 @@ abstract class AbstractCRUD implements CRUDInterface {
 	 *
 	 * @since 0.1
 	 *
-	 * @param TableDefinitionInterface $table A TableDefinitionInterface object.
+	 * @param TableDefinitionInterface $table_definition A TableDefinitionInterface object.
 	 */
-	public function __construct( TableDefinitionInterface $table ) {
+	public function __construct( TableDefinitionInterface $table_definition ) {
 		global $wpdb;
 
-		$this->table = $table;
+		$this->table_definition = $table_definition;
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -73,14 +77,14 @@ abstract class AbstractCRUD implements CRUDInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the table.
+	 * Get the TableDefinitionInterface object.
 	 *
-	 * @since 0.1
+	 * @since 0.2
 	 *
 	 * @return TableDefinitionInterface
 	 */
-	public function get_table(): TableDefinitionInterface {
-		return $this->table;
+	public function get_table_definition(): TableDefinitionInterface {
+		return $this->table_definition;
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -107,7 +111,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 			return '*';
 		}
 
-		$column_names = array_keys( $this->table->get_column_placeholders() );
+		$column_names = array_keys( $this->table_definition->get_column_placeholders() );
 		$select       = array_map( 'strtolower', $select );
 		$select       = array_intersect( $select, $column_names );
 
@@ -136,7 +140,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 		$data = array_change_key_case( $data );
 
 		// Keep only valid columns.
-		$data = array_intersect_key( $data, $this->table->get_column_placeholders() );
+		$data = array_intersect_key( $data, $this->table_definition->get_column_placeholders() );
 
 		// Maybe serialize some values.
 		return $this->serialize_columns( $data );
@@ -154,7 +158,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 	 * @return array<string>
 	 */
 	protected function get_placeholders( array $columns ): array {
-		$formats = $this->table->get_column_placeholders();
+		$formats = $this->table_definition->get_column_placeholders();
 		$formats = array_intersect_key( $formats, $columns );
 
 		return array_merge( $columns, $formats );
@@ -170,7 +174,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 	 * @return string
 	 */
 	protected function get_placeholder( string $column ): string {
-		$columns = $this->table->get_column_placeholders();
+		$columns = $this->table_definition->get_column_placeholders();
 		return isset( $columns[ $column ] ) ? $columns[ $column ] : '%s';
 	}
 
@@ -183,7 +187,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 	 * @return mixed|null     The default value. Null if the column does not exist.
 	 */
 	protected function get_default_value( string $column ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoReturnType
-		$columns = $this->table->get_column_defaults();
+		$columns = $this->table_definition->get_column_defaults();
 		return isset( $columns[ $column ] ) ? $columns[ $column ] : null;
 	}
 
@@ -276,7 +280,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 	protected function serialize_columns( array $data ): array {
 		if ( ! isset( $this->to_serialize ) ) {
 			$this->to_serialize = array_filter(
-				$this->table->get_column_defaults(),
+				$this->table_definition->get_column_defaults(),
 				function ( $value ): bool { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType
 					return is_array( $value ) || is_object( $value );
 				}
@@ -330,7 +334,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 			return $this->auto_increment_columns;
 		}
 
-		$schema = $this->table->get_table_schema();
+		$schema = $this->table_definition->get_table_schema();
 
 		if ( preg_match_all( '@^\s*(?<col_name>[^\s]+)\s.+\sauto_increment,?$@mi', $schema, $matches ) ) {
 			$this->auto_increment_columns = array_fill_keys( $matches['col_name'], '' );
