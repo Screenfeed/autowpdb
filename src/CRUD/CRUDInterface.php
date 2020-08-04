@@ -26,13 +26,13 @@ interface CRUDInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the table.
+	 * Get the TableDefinitionInterface object.
 	 *
-	 * @since 0.1
+	 * @since 0.2
 	 *
 	 * @return TableDefinitionInterface
 	 */
-	public function get_table(): TableDefinitionInterface;
+	public function get_table_definition(): TableDefinitionInterface;
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** CREATE ================================================================================== */

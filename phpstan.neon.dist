@@ -6,3 +6,5 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     paths:
         - %currentWorkingDirectory%/src/
+    ignoreErrors:
+        - '#^Function apply_filters(_ref_array)? invoked with \d parameters, \d required\.$#'
