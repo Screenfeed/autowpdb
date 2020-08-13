@@ -216,7 +216,7 @@ class TableUpgrader {
 	 * @return string
 	 */
 	public function get_db_version_option_name(): string {
-		return $this->table->get_table_definition()->get_table_short_name() . self::TABLE_VERSION_OPTION_SUFFIX;
+		return $this->table->get_table_definition()->get_table_short_name() . static::TABLE_VERSION_OPTION_SUFFIX;
 	}
 
 	/** ----------------------------------------------------------------------------------------- */

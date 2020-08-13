@@ -60,7 +60,7 @@ class DBUtilities {
 			return false;
 		}
 
-		if ( ! self::table_exists( $table_name ) ) {
+		if ( ! static::table_exists( $table_name ) ) {
 			// The table does not exist (wtf).
 			if ( static::can_log( $logger ) ) {
 				call_user_func( $logger, sprintf( 'Creation of the DB table %s failed.', $table_name ) );
@@ -111,7 +111,7 @@ class DBUtilities {
 		$query  = "DROP TABLE `$table_name`";
 		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		if ( true !== $result || self::table_exists( $table_name ) ) {
+		if ( true !== $result || static::table_exists( $table_name ) ) {
 			// The table still exists.
 			if ( static::can_log( $logger ) ) {
 				call_user_func( $logger, sprintf( 'Deletion of the DB table %s failed.', $table_name ) );
@@ -249,7 +249,7 @@ class DBUtilities {
 	 * @return string|null        Sanitized database table name. Null on error.
 	 */
 	public static function sanitize_table_name( string $table_name ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoReturnType
-		if ( empty( $table_name ) ) {
+		if ( '' === $table_name ) {
 			return null;
 		}
 
@@ -267,14 +267,14 @@ class DBUtilities {
 		// Single underscores only.
 		$table_name = preg_replace( '@_{2,}@', '_', $table_name );
 
-		if ( empty( $table_name ) ) {
+		if ( '' === $table_name || null === $table_name ) {
 			return null;
 		}
 
 		// Remove trailing underscores.
 		$table_name = trim( $table_name, '_' );
 
-		if ( empty( $table_name ) ) {
+		if ( '' === $table_name ) {
 			return null;
 		}
 
@@ -283,6 +283,7 @@ class DBUtilities {
 
 	/**
 	 * Change an array of values into a comma separated list, ready to be used in a `IN ()` clause.
+	 * WARNING: works only with numeric and string values. Numeric values won't be quoted ('23' will become 23), so they will not be listed as strings.
 	 *
 	 * @since 0.1
 	 *
@@ -290,13 +291,19 @@ class DBUtilities {
 	 * @return string               A comma separated list of values.
 	 */
 	public static function prepare_values_list( array $values ): string {
-		$values = esc_sql( (array) $values );
-		$values = array_map( [ __CLASS__, 'quote_string' ], $values );
+		$values = esc_sql( $values );
+		$values = array_map(
+			function ( $value ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType, NeutronStandard.Functions.TypeHint.NoReturnType
+				return static::quote_string( $value );
+			},
+			$values
+		);
 		return implode( ',', $values );
 	}
 
 	/**
-	 * Wrap a value in quotes, unless it is a numeric value.
+	 * Wrap a value in (simple) quotes, unless it is a numeric value.
+	 * WARNING: string values must have simple quotes already escaped.
 	 *
 	 * @since 0.1
 	 *
@@ -304,11 +311,11 @@ class DBUtilities {
 	 * @return mixed
 	 */
 	public static function quote_string( $value ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType, NeutronStandard.Functions.TypeHint.NoReturnType
-		return is_numeric( $value ) || ! is_string( $value ) ? $value : "'" . addcslashes( $value, "'" ) . "'";
+		return is_numeric( $value ) || ! is_string( $value ) ? $value : "'$value'";
 	}
 
 	/**
-	 * Wrap a value in quotes, unless it is a numeric value.
+	 * Tell if we can log, depending if some constants are set and if the log callback is callable.
 	 *
 	 * @since 0.2
 	 *
