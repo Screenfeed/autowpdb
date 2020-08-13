@@ -6,5 +6,11 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     paths:
         - %currentWorkingDirectory%/src/
+    excludes_analyse:
+        - %currentWorkingDirectory%/.git/*
+        - %currentWorkingDirectory%/bin/*
+        - %currentWorkingDirectory%/report/*
+        - %currentWorkingDirectory%/Tests/*
+        - %currentWorkingDirectory%/vendor/*
     ignoreErrors:
         - '#^Function apply_filters(_ref_array)? invoked with \d parameters, \d required\.$#'

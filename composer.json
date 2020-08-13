@@ -25,11 +25,13 @@
 		"php": ">=7.0.0"
 	},
 	"require-dev": {
-		"php": "~7.1",
+		"php": "^7.1",
 		"automattic/phpcs-neutron-standard": "*",
+		"brain/monkey": "^2.0",
 		"dealerdirect/phpcodesniffer-composer-installer": "*",
 		"phpcompatibility/phpcompatibility-wp": "*",
 		"phpmetrics/phpmetrics": "*",
+		"phpunit/phpunit": "^7",
 		"roave/security-advisories": "dev-master",
 		"squizlabs/php_codesniffer": "*",
 		"szepeviktor/phpstan-wordpress": "*",
@@ -40,14 +42,29 @@
 			"Screenfeed\\AutoWPDB\\": "src/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"Screenfeed\\AutoWPDB\\Tests\\": "Tests/"
+		}
+	},
 	"scripts": {
 		"cs": "phpcs",
 		"stan": "\"vendor/bin/phpstan\" analyze --memory-limit=200M",
 		"metrics": "phpmetrics --config=phpmetrics.json",
+		"test-unit":"\"vendor/bin/phpunit\" --testsuite=unit --log-junit=report/junit.xml --colors=always --configuration=Tests/Unit/phpunit.xml.dist",
+		"test-integration": "\"vendor/bin/phpunit\" --testsuite=integration --colors=always --configuration=Tests/Integration/phpunit.xml.dist",
 		"run-lints": [
 			"@cs",
 			"@stan",
 			"@metrics"
+		],
+		"run-tests": [
+			"@test-unit",
+			"@test-integration"
+		],
+		"run-all": [
+			"@run-lints",
+			"@run-tests"
 		]
 	}
 }
