@@ -329,26 +329,24 @@ class DBUtilities {
 	 *
 	 * @since 0.2
 	 *
-	 * @param  callable|false $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log.
+	 * @param  callable|false $logger Callback to use to log messages. The message is passed to the callback as 1st argument. False to disable log.
 	 * @return bool
 	 */
 	protected static function can_log( $logger ): bool { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType
-		if ( empty( $logger ) ) {
+		if ( empty( $logger ) || ! is_callable( $logger ) ) {
 			return false;
 		}
 
-		if ( ! defined( 'WP_DEBUG' ) || empty( WP_DEBUG ) ) {
-			return false;
-		}
+		$can_log = defined( 'WP_DEBUG' ) && ! empty( WP_DEBUG ) && defined( 'WP_DEBUG_LOG' ) && ! empty( WP_DEBUG_LOG );
 
-		if ( ! defined( 'WP_DEBUG_LOG' ) || empty( WP_DEBUG_LOG ) ) {
-			return false;
-		}
-
-		if ( ! is_callable( $logger ) ) {
-			return false;
-		}
-
-		return true;
+		/**
+		 * Tell if we can log, depending if some constants are set.
+		 *
+		 * @since 0.3
+		 *
+		 * @param bool     $can_log True when allowed to log. False otherwise.
+		 * @param callable $logger  Callback to use to log messages.
+		 */
+		return (bool) apply_filters( 'screenfeed_autowpdb_can_log', $can_log, $logger );
 	}
 }
