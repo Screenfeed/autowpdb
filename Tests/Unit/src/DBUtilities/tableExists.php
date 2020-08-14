@@ -42,7 +42,7 @@ class Test_TableExists extends TestCase {
 		$wpdb
 			->expects( $this->once() )
 			->method( 'get_var' )
-			->with( "SHOW TABLES LIKE `{$this->table_name}`" )
+			->with( "SHOW TABLES LIKE '{$this->table_name}'" )
 			->willReturn( $result );
 	}
 }

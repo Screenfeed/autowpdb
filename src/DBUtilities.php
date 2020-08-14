@@ -82,11 +82,21 @@ class DBUtilities {
 	public static function table_exists( string $table_name ): bool {
 		global $wpdb;
 
-		$table_name = $wpdb->esc_like( $table_name );
-		$query      = "SHOW TABLES LIKE `$table_name`";
-		$result     = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		if ( ! defined( 'SCREENFEED_IS_TESTING' ) || empty( SCREENFEED_IS_TESTING ) ) {
+			$table_name = $wpdb->esc_like( $table_name );
+			$query      = "SHOW TABLES LIKE '$table_name'";
+			$result     = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		return ( $result === $table_name );
+			return ( $result === $table_name );
+		}
+
+		// During the integration tests, WP only allows to create temporary tables, which won't be listed in 'SHOW TABLES'.
+		$wpdb->hide_errors();
+
+		$query = "SELECT * FROM `$table_name` LIMIT 1";
+		$wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		return "Table '{$wpdb->dbname}.$table_name' doesn't exist" !== $wpdb->last_error;
 	}
 
 	/**
