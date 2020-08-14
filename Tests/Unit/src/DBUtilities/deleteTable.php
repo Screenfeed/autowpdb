@@ -23,12 +23,12 @@ class Test_DeleteTable extends TestCase {
 		$result = MockDBUtilities::delete_table(
 			$this->table_name,
 			[
-				'logger' => $this->logger,
+				'logger' => [ $this, 'log' ],
 			]
 		);
 
 		$this->assertTrue( $result );
-		$this->assertCount( 0, MockDBUtilities::$logs );
+		$this->assertCount( 0, $this->logs );
 	}
 
 	public function testShouldReturnFalseWhenQueryFails() {
@@ -42,15 +42,15 @@ class Test_DeleteTable extends TestCase {
 		$result = MockDBUtilities::delete_table(
 			$this->table_name,
 			[
-				'logger' => $this->logger,
+				'logger' => [ $this, 'log' ],
 			]
 		);
 
 		$error = sprintf( 'Deletion of the DB table %s failed.', $this->table_name );
 
 		$this->assertFalse( $result );
-		$this->assertContains( $error, MockDBUtilities::$logs );
-		$this->assertCount( 1, MockDBUtilities::$logs );
+		$this->assertContains( $error, $this->logs );
+		$this->assertCount( 1, $this->logs );
 	}
 
 	public function testShouldReturnFalseWhenTableError() {
@@ -64,15 +64,15 @@ class Test_DeleteTable extends TestCase {
 		$result = MockDBUtilities::delete_table(
 			$this->table_name,
 			[
-				'logger' => $this->logger,
+				'logger' => [ $this, 'log' ],
 			]
 		);
 
 		$error = sprintf( 'Deletion of the DB table %s failed.', $this->table_name );
 
 		$this->assertFalse( $result );
-		$this->assertContains( $error, MockDBUtilities::$logs );
-		$this->assertCount( 1, MockDBUtilities::$logs );
+		$this->assertContains( $error, $this->logs );
+		$this->assertCount( 1, $this->logs );
 	}
 
 	public function testShouldFailWithoutLogging() {
@@ -86,12 +86,12 @@ class Test_DeleteTable extends TestCase {
 		$result = MockDBUtilities::delete_table(
 			$this->table_name,
 			[
-				'logger' => $this->logger,
+				'logger' => [ $this, 'log' ],
 			]
 		);
 
 		$this->assertFalse( $result );
-		$this->assertCount( 0, MockDBUtilities::$logs );
+		$this->assertCount( 0, $this->logs );
 	}
 
 	public function createMocks( $result = true ) {

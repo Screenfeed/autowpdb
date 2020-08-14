@@ -10,8 +10,6 @@ use Screenfeed\AutoWPDB\Tests\Unit\StaticMethodMocker;
 class DBUtilities extends BaseDBUtilities {
 	use StaticMethodMocker;
 
-	static public $logs = [];
-
 	public static function create_table( string $table_name, string $schema_query, array $args = [] ): bool {
 		return static::maybe_mock_static( __FUNCTION__, $table_name, $schema_query, $args );
 	}
@@ -58,9 +56,5 @@ class DBUtilities extends BaseDBUtilities {
 
 	protected static function can_log( $logger ): bool {
 		return static::maybe_mock_static( __FUNCTION__, $logger );
-	}
-
-	protected static function local_log( $message ) {
-		static::$logs[] = $message;
 	}
 }

@@ -12,14 +12,27 @@ use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilities as MockDBUtilities;
 
 abstract class TestCase extends BaseTestCase {
 	protected $table_name = 'wp_foobar';
-	protected $logger     = '\Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilities::local_log';
+	public $logs;
+
+	/**
+	 * Prepares the test environment before each test.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		$this->logs = [];
+		MockDBUtilities::$mocks = [];
+	}
 
 	/**
 	 * Cleans up the test environment after each test.
 	 */
-	protected function tearDown(): void {
+	public function tearDown(): void {
 		parent::tearDown();
+		$this->logs = [];
 		MockDBUtilities::$mocks = [];
-		MockDBUtilities::$logs  = [];
+	}
+
+	public function log( $message ) {
+		$this->logs[] = $message;
 	}
 }

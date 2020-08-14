@@ -27,12 +27,12 @@ class Test_CreateTable extends TestCase {
 			$this->table_name,
 			$this->schema_query,
 			[
-				'logger' => $this->logger,
+				'logger' => [ $this, 'log' ],
 			]
 		);
 
 		$this->assertTrue( $result );
-		$this->assertCount( 0, MockDBUtilities::$logs );
+		$this->assertCount( 0, $this->logs );
 	}
 
 	public function testShouldReturnFalseWhenDBError() {
@@ -49,15 +49,15 @@ class Test_CreateTable extends TestCase {
 			$this->table_name,
 			$this->schema_query,
 			[
-				'logger' => $this->logger,
+				'logger' => [ $this, 'log' ],
 			]
 		);
 
 		$error = sprintf( 'Error while creating the DB table %s: %s', $this->table_name, $db_error );
 
 		$this->assertFalse( $result );
-		$this->assertContains( $error, MockDBUtilities::$logs );
-		$this->assertCount( 1, MockDBUtilities::$logs );
+		$this->assertContains( $error, $this->logs );
+		$this->assertCount( 1, $this->logs );
 	}
 
 	public function testShouldReturnFalseWhenTableError() {
@@ -72,15 +72,15 @@ class Test_CreateTable extends TestCase {
 			$this->table_name,
 			$this->schema_query,
 			[
-				'logger' => $this->logger,
+				'logger' => [ $this, 'log' ],
 			]
 		);
 
 		$error = sprintf( 'Creation of the DB table %s failed.', $this->table_name );
 
 		$this->assertFalse( $result );
-		$this->assertContains( $error, MockDBUtilities::$logs );
-		$this->assertCount( 1, MockDBUtilities::$logs );
+		$this->assertContains( $error, $this->logs );
+		$this->assertCount( 1, $this->logs );
 	}
 
 	public function testShouldFailWithoutLogging() {
@@ -97,12 +97,12 @@ class Test_CreateTable extends TestCase {
 			$this->table_name,
 			$this->schema_query,
 			[
-				'logger' => $this->logger,
+				'logger' => [ $this, 'log' ],
 			]
 		);
 
 		$this->assertFalse( $result );
-		$this->assertCount( 0, MockDBUtilities::$logs );
+		$this->assertCount( 0, $this->logs );
 	}
 
 	public function createMocks( $db_error = '' ) {
