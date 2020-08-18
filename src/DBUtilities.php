@@ -82,21 +82,13 @@ class DBUtilities {
 	public static function table_exists( string $table_name ): bool {
 		global $wpdb;
 
-		if ( ! defined( 'SCREENFEED_IS_TESTING' ) || empty( SCREENFEED_IS_TESTING ) ) {
-			$table_name = $wpdb->esc_like( $table_name );
-			$query      = "SHOW TABLES LIKE '$table_name'";
-			$result     = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-
-			return ( $result === $table_name );
-		}
-
-		// During the integration tests, WP only allows to create temporary tables, which won't be listed in 'SHOW TABLES'.
 		$wpdb->hide_errors();
 
-		$query = "SELECT * FROM `$table_name` LIMIT 1";
-		$wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$esc_table_name = $wpdb->esc_like( $table_name );
+		$query          = "SHOW TABLES LIKE '$esc_table_name'";
+		$result         = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		return "Table '{$wpdb->dbname}.$table_name' doesn't exist" !== $wpdb->last_error;
+		return ( $result === $table_name );
 	}
 
 	/**
@@ -115,6 +107,8 @@ class DBUtilities {
 	 */
 	public static function delete_table( string $table_name, array $args = [] ): bool {
 		global $wpdb;
+
+		$wpdb->hide_errors();
 
 		$logger = $args['logger'] ?? 'error_log';
 
@@ -146,6 +140,8 @@ class DBUtilities {
 	public static function reinit_table( string $table_name ): bool {
 		global $wpdb;
 
+		$wpdb->hide_errors();
+
 		$query  = "TRUNCATE TABLE `$table_name`";
 		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
@@ -168,6 +164,8 @@ class DBUtilities {
 	public static function empty_table( string $table_name ): int {
 		global $wpdb;
 
+		$wpdb->hide_errors();
+
 		$query = "DELETE FROM `$table_name`";
 
 		return (int) $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -185,6 +183,8 @@ class DBUtilities {
 	 */
 	public static function clone_table( string $table_name, string $new_table_name ): bool {
 		global $wpdb;
+
+		$wpdb->hide_errors();
 
 		$query  = "CREATE TABLE `$new_table_name` LIKE `$table_name`";
 		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -204,6 +204,8 @@ class DBUtilities {
 	 */
 	public static function copy_table( string $table_name, string $new_table_name ): int {
 		global $wpdb;
+
+		$wpdb->hide_errors();
 
 		$query = "INSERT INTO `$new_table_name` SELECT * FROM `$table_name`";
 
@@ -225,6 +227,8 @@ class DBUtilities {
 
 		$prefix = '';
 		$column = trim( $column );
+
+		$wpdb->hide_errors();
 
 		if ( preg_match( '@^DISTINCT\s+(?<column>[^\s]+)$@i', $column, $matches ) ) {
 			$prefix = 'DISTINCT ';
