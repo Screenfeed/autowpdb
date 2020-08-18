@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Screenfeed\AutoWPDB\TableDefinition;
 
 use JsonSerializable;
-use Screenfeed\AutoWPDB\DBUtilities;
 
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
 
@@ -19,7 +18,6 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  *
  * @since 0.1
  * @uses  $GLOBALS['wpdb']
- * @uses  DBUtilities
  * @uses  wp_json_encode()
  */
 abstract class AbstractTableDefinition implements TableDefinitionInterface, JsonSerializable {
@@ -31,6 +29,15 @@ abstract class AbstractTableDefinition implements TableDefinitionInterface, Json
 	 * @since 0.1
 	 */
 	protected $full_table_name;
+
+	/**
+	 * Full name of the static class to use to perform the operations.
+	 * Default is '\Screenfeed\AutoWPDB\DBUtilities'.
+	 *
+	 * @var   string
+	 * @since 0.3
+	 */
+	protected $table_worker = '\Screenfeed\AutoWPDB\DBUtilities';
 
 	/**
 	 * Get the table name.
@@ -48,7 +55,7 @@ abstract class AbstractTableDefinition implements TableDefinitionInterface, Json
 
 		$prefix = $this->is_table_global() ? $wpdb->base_prefix : $wpdb->prefix;
 
-		$this->full_table_name = $prefix . DBUtilities::sanitize_table_name( $this->get_table_short_name() );
+		$this->full_table_name = $prefix . $this->table_worker::sanitize_table_name( $this->get_table_short_name() );
 
 		return $this->full_table_name;
 	}
