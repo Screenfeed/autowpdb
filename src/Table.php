@@ -170,4 +170,16 @@ class Table {
 	public function count( string $column = '*' ): int {
 		return DBUtilities::count_table_rows( $this->table_definition->get_table_name(), $column );
 	}
+
+	/**
+	 * Get the DB’s last error.
+	 * This is merely a wrapper to get $wpdb->last_error.
+	 *
+	 * @since 0.3
+	 *
+	 * @return string The error message. An empty string if there is no error.
+	 */
+	public function get_last_error(): string {
+		return DBUtilities::get_last_error();
+	}
 }
