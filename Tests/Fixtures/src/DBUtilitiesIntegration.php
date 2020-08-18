@@ -6,6 +6,8 @@ use Screenfeed\AutoWPDB\DBUtilities;
 /**
  * Allows to perform some Integration tests for DBUtilities::create_table() and DBUtilities::delete_table().
  * During the integration tests, WP only allows to create temporary tables, which won't be listed in 'SHOW TABLES'.
+ *
+ * @source https://wordpress.stackexchange.com/questions/220275/wordpress-unit-testing-cannot-create-tables
  */
 class DBUtilitiesIntegration extends DBUtilities {
 
