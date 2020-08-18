@@ -17,11 +17,11 @@ class Test_SanitizeTableName extends TestCase {
 
 		$result = DBUtilities::sanitize_table_name( ' _tâBLé---_nàmè_0- ' );
 
-		$this->assertEquals( 'table_name_0', $result );
+		$this->assertSame( 'table_name_0', $result );
 
 		$result = DBUtilities::sanitize_table_name( ' 0 ' );
 
-		$this->assertEquals( '0', $result );
+		$this->assertSame( '0', $result );
 	}
 
 	public function testShouldReturnNullWhenOnlyInvalidCharacters() {

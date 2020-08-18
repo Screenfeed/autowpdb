@@ -2,7 +2,7 @@
 namespace Screenfeed\AutoWPDB\Tests\Unit\src\DBUtilities;
 
 use Brain\Monkey\Functions;
-use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilities as MockDBUtilities;
+use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesUnit;
 use wpdb;
 
 /**
@@ -18,12 +18,12 @@ class Test_CreateTable extends TestCase {
 	public function testShouldReturnTrue() {
 		$this->createMocks();
 
-		MockDBUtilities::$mocks = [
+		DBUtilitiesUnit::$mocks = [
 			'table_exists' => true,
 			'can_log'      => true,
 		];
 
-		$result = MockDBUtilities::create_table(
+		$result = DBUtilitiesUnit::create_table(
 			$this->table_name,
 			$this->schema_query,
 			[
@@ -40,12 +40,12 @@ class Test_CreateTable extends TestCase {
 
 		$this->createMocks( $db_error );
 
-		MockDBUtilities::$mocks = [
+		DBUtilitiesUnit::$mocks = [
 			'table_exists' => true,
 			'can_log'      => true,
 		];
 
-		$result = MockDBUtilities::create_table(
+		$result = DBUtilitiesUnit::create_table(
 			$this->table_name,
 			$this->schema_query,
 			[
@@ -63,12 +63,12 @@ class Test_CreateTable extends TestCase {
 	public function testShouldReturnFalseWhenTableError() {
 		$this->createMocks();
 
-		MockDBUtilities::$mocks = [
+		DBUtilitiesUnit::$mocks = [
 			'table_exists' => false,
 			'can_log'      => true,
 		];
 
-		$result = MockDBUtilities::create_table(
+		$result = DBUtilitiesUnit::create_table(
 			$this->table_name,
 			$this->schema_query,
 			[
@@ -88,12 +88,12 @@ class Test_CreateTable extends TestCase {
 
 		$this->createMocks( $db_error );
 
-		MockDBUtilities::$mocks = [
+		DBUtilitiesUnit::$mocks = [
 			'table_exists' => true,
 			'can_log'      => false,
 		];
 
-		$result = MockDBUtilities::create_table(
+		$result = DBUtilitiesUnit::create_table(
 			$this->table_name,
 			$this->schema_query,
 			[

@@ -32,8 +32,11 @@ class Test_ReinitTable extends TestCase {
 		global $wpdb;
 
 		$wpdb = $this->getMockBuilder( wpdb::class )
-			->setMethods( [ 'query' ] )
+			->setMethods( [ 'hide_errors', 'query' ] )
 			->getMock();
+		$wpdb
+			->expects( $this->once() )
+			->method( 'hide_errors' );
 		$wpdb
 			->expects( $this->once() )
 			->method( 'query' )

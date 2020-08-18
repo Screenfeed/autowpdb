@@ -17,7 +17,7 @@ class Test_EmptyTable extends TestCase {
 
 		$result = DBUtilities::empty_table( $this->table_name );
 
-		$this->assertEquals( 7, $result );
+		$this->assertSame( 7, $result );
 	}
 
 	public function testShouldReturnZero() {
@@ -25,15 +25,18 @@ class Test_EmptyTable extends TestCase {
 
 		$result = DBUtilities::empty_table( $this->table_name );
 
-		$this->assertEquals( 0, $result );
+		$this->assertSame( 0, $result );
 	}
 
 	public function createMocks( $result = 0 ) {
 		global $wpdb;
 
 		$wpdb = $this->getMockBuilder( wpdb::class )
-			->setMethods( [ 'query' ] )
+			->setMethods( [ 'hide_errors', 'query' ] )
 			->getMock();
+		$wpdb
+			->expects( $this->once() )
+			->method( 'hide_errors' );
 		$wpdb
 			->expects( $this->once() )
 			->method( 'query' )

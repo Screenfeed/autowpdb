@@ -20,7 +20,7 @@ class Test_QuoteString extends TestCase {
 		foreach ( $values as $actual => $expected ) {
 			$result = DBUtilities::quote_string( $actual );
 
-			$this->assertEquals( $expected, $result );
+			$this->assertSame( $expected, $result );
 		}
 	}
 
@@ -36,7 +36,7 @@ class Test_QuoteString extends TestCase {
 		foreach ( $values as $expected ) {
 			$result = DBUtilities::quote_string( $expected );
 
-			$this->assertEquals( $expected, $result );
+			$this->assertSame( $expected, $result );
 		}
 	}
 }

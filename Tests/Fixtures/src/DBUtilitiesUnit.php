@@ -1,13 +1,13 @@
 <?php
 namespace Screenfeed\AutoWPDB\Tests\Fixtures\src;
 
-use Screenfeed\AutoWPDB\DBUtilities as BaseDBUtilities;
+use Screenfeed\AutoWPDB\DBUtilities;
 use Screenfeed\AutoWPDB\Tests\Unit\StaticMethodMocker;
 
 /**
- * Allows to mock BaseDBUtilities.
+ * Allows to mock DBUtilities for Unit tests.
  */
-class DBUtilities extends BaseDBUtilities {
+class DBUtilitiesUnit extends DBUtilities {
 	use StaticMethodMocker;
 
 	public static function create_table( string $table_name, string $schema_query, array $args = [] ): bool {

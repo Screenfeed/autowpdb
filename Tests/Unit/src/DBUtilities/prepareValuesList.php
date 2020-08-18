@@ -3,7 +3,7 @@ namespace Screenfeed\AutoWPDB\Tests\Unit\src\DBUtilities;
 
 use Brain\Monkey\Functions;
 use Mockery;
-use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilities;
+use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesUnit;
 
 /**
  * Tests for DBUtilities::prepare_values_list().
@@ -16,7 +16,7 @@ class Test_PrepareValuesList extends TestCase {
 	public function testShouldReturnPreparedList() {
 		$this->createMocks();
 
-		$result = DBUtilities::prepare_values_list(
+		$result = DBUtilitiesUnit::prepare_values_list(
 			[
 				2,
 				'3',
@@ -26,7 +26,7 @@ class Test_PrepareValuesList extends TestCase {
 			]
 		);
 
-		$this->assertEquals( "2,3,'','string with \' \\\" quotes','string'", $result );
+		$this->assertSame( "2,3,'','string with \' \\\" quotes','string'", $result );
 	}
 
 	public function createMocks() {
@@ -39,7 +39,7 @@ class Test_PrepareValuesList extends TestCase {
 				}
 			);
 
-		DBUtilities::$mocks = [
+		DBUtilitiesUnit::$mocks = [
 			'quote_string' => function ( $value ) {
 				switch ( $value ) {
 					case '2':

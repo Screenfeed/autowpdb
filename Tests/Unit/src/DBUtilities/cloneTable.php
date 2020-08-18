@@ -11,7 +11,6 @@ use wpdb;
  * @group  DBUtilities
  */
 class Test_CloneTable extends TestCase {
-	protected $target_table_name = 'wp_targettable';
 
 	public function testShouldReturnTrueOnSuccess() {
 		$this->createMocks( true );
@@ -33,8 +32,11 @@ class Test_CloneTable extends TestCase {
 		global $wpdb;
 
 		$wpdb = $this->getMockBuilder( wpdb::class )
-			->setMethods( [ 'query' ] )
+			->setMethods( [ 'hide_errors', 'query' ] )
 			->getMock();
+		$wpdb
+			->expects( $this->once() )
+			->method( 'hide_errors' );
 		$wpdb
 			->expects( $this->once() )
 			->method( 'query' )

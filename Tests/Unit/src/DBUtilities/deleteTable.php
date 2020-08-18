@@ -1,7 +1,7 @@
 <?php
 namespace Screenfeed\AutoWPDB\Tests\Unit\src\DBUtilities;
 
-use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilities as MockDBUtilities;
+use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesUnit;
 use wpdb;
 
 /**
@@ -15,12 +15,12 @@ class Test_DeleteTable extends TestCase {
 	public function testShouldReturnTrue() {
 		$this->createMocks( true );
 
-		MockDBUtilities::$mocks = [
+		DBUtilitiesUnit::$mocks = [
 			'table_exists' => false,
 			'can_log'      => true,
 		];
 
-		$result = MockDBUtilities::delete_table(
+		$result = DBUtilitiesUnit::delete_table(
 			$this->table_name,
 			[
 				'logger' => [ $this, 'log' ],
@@ -34,12 +34,12 @@ class Test_DeleteTable extends TestCase {
 	public function testShouldReturnFalseWhenQueryFails() {
 		$this->createMocks( false );
 
-		MockDBUtilities::$mocks = [
+		DBUtilitiesUnit::$mocks = [
 			'table_exists' => false,
 			'can_log'      => true,
 		];
 
-		$result = MockDBUtilities::delete_table(
+		$result = DBUtilitiesUnit::delete_table(
 			$this->table_name,
 			[
 				'logger' => [ $this, 'log' ],
@@ -56,12 +56,12 @@ class Test_DeleteTable extends TestCase {
 	public function testShouldReturnFalseWhenTableError() {
 		$this->createMocks( true );
 
-		MockDBUtilities::$mocks = [
+		DBUtilitiesUnit::$mocks = [
 			'table_exists' => true,
 			'can_log'      => true,
 		];
 
-		$result = MockDBUtilities::delete_table(
+		$result = DBUtilitiesUnit::delete_table(
 			$this->table_name,
 			[
 				'logger' => [ $this, 'log' ],
@@ -78,12 +78,12 @@ class Test_DeleteTable extends TestCase {
 	public function testShouldFailWithoutLogging() {
 		$this->createMocks( false );
 
-		MockDBUtilities::$mocks = [
+		DBUtilitiesUnit::$mocks = [
 			'table_exists' => false,
 			'can_log'      => false,
 		];
 
-		$result = MockDBUtilities::delete_table(
+		$result = DBUtilitiesUnit::delete_table(
 			$this->table_name,
 			[
 				'logger' => [ $this, 'log' ],
@@ -98,8 +98,11 @@ class Test_DeleteTable extends TestCase {
 		global $wpdb;
 
 		$wpdb = $this->getMockBuilder( wpdb::class )
-			->setMethods( [ 'query' ] )
+			->setMethods( [ 'hide_errors', 'query' ] )
 			->getMock();
+		$wpdb
+			->expects( $this->once() )
+			->method( 'hide_errors' );
 		$wpdb
 			->expects( $this->once() )
 			->method( 'query' )

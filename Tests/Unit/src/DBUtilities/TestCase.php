@@ -8,10 +8,11 @@
 namespace Screenfeed\AutoWPDB\Tests\Unit\src\DBUtilities;
 
 use Screenfeed\AutoWPDB\Tests\Unit\TestCase as BaseTestCase;
-use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilities as MockDBUtilities;
+use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesUnit;
 
 abstract class TestCase extends BaseTestCase {
-	protected $table_name = 'wp_foobar';
+	protected $table_name        = 'wp_foobar';
+	protected $target_table_name = 'wp_targettable';
 	public $logs;
 
 	/**
@@ -20,7 +21,7 @@ abstract class TestCase extends BaseTestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->logs = [];
-		MockDBUtilities::$mocks = [];
+		DBUtilitiesUnit::$mocks = [];
 	}
 
 	/**
@@ -29,7 +30,7 @@ abstract class TestCase extends BaseTestCase {
 	public function tearDown(): void {
 		parent::tearDown();
 		$this->logs = [];
-		MockDBUtilities::$mocks = [];
+		DBUtilitiesUnit::$mocks = [];
 	}
 
 	public function log( $message ) {

@@ -32,8 +32,11 @@ class Test_TableExists extends TestCase {
 		global $wpdb;
 
 		$wpdb = $this->getMockBuilder( wpdb::class )
-			->setMethods( [ 'esc_like', 'get_var' ] )
+			->setMethods( [ 'hide_errors', 'esc_like', 'get_var' ] )
 			->getMock();
+		$wpdb
+			->expects( $this->once() )
+			->method( 'hide_errors' );
 		$wpdb
 			->expects( $this->once() )
 			->method( 'esc_like' )
