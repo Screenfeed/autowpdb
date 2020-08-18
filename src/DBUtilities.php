@@ -245,6 +245,20 @@ class DBUtilities {
 	}
 
 	/**
+	 * Get the DB’s last error.
+	 * This is merely a wrapper to get $wpdb->last_error.
+	 *
+	 * @since 0.3
+	 *
+	 * @return string The error message. An empty string if there is no error.
+	 */
+	public static function get_last_error(): string {
+		global $wpdb;
+
+		return ! empty( $wpdb->last_error ) ? (string) $wpdb->last_error : '';
+	}
+
+	/**
 	 * Sanitize a table name string.
 	 * Used to make sure that a table name value meets MySQL expectations.
 	 *
