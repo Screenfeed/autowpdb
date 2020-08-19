@@ -48,7 +48,7 @@ class Table {
 	 */
 	public function __construct( TableDefinitionInterface $table_definition, string $table_worker = '' ) {
 		$this->table_definition = $table_definition;
-		$this->table_worker     = ! empty( $table_worker ) ? ltrim( $table_worker, '//' ) : DBUtilities::class;
+		$this->table_worker     = ! empty( $table_worker ) ? ltrim( $table_worker, '\\' ) : DBUtilities::class;
 	}
 
 	/**
