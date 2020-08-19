@@ -29,5 +29,10 @@ class Test_GetTableWorker extends TestCase {
 		$result = $table->get_table_worker();
 
 		$this->assertSame( $worker, $result );
+
+		$table  = new Table( $table_definition, '\Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesUnit' );
+		$result = $table->get_table_worker();
+
+		$this->assertSame( $worker, $result );
 	}
 }
