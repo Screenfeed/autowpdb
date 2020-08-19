@@ -42,6 +42,10 @@ class DBUtilitiesUnit extends DBUtilities {
 		return static::maybe_mock_static( __FUNCTION__, $table_name, $column );
 	}
 
+	public static function get_last_error(): string {
+		return static::maybe_mock_static( __FUNCTION__ );
+	}
+
 	public static function sanitize_table_name( string $table_name ) {
 		return static::maybe_mock_static( __FUNCTION__, $table_name );
 	}
