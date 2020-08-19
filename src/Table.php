@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Screenfeed\AutoWPDB;
 
+use Screenfeed\AutoWPDB\DBUtilities;
 use Screenfeed\AutoWPDB\TableDefinition\TableDefinitionInterface;
 
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
@@ -47,7 +48,7 @@ class Table {
 	 */
 	public function __construct( TableDefinitionInterface $table_definition, string $table_worker = '' ) {
 		$this->table_definition = $table_definition;
-		$this->table_worker     = ! empty( $table_worker ) ? $table_worker : '\Screenfeed\AutoWPDB\DBUtilities';
+		$this->table_worker     = ! empty( $table_worker ) ? ltrim( $table_worker, '//' ) : DBUtilities::class;
 	}
 
 	/**
@@ -154,7 +155,7 @@ class Table {
 	public function clone_to( string $new_table_name ): bool {
 		$new_table_name = $this->table_worker::sanitize_table_name( $new_table_name );
 
-		if ( empty( $new_table_name ) ) {
+		if ( null === $new_table_name ) {
 			return false;
 		}
 
@@ -172,7 +173,7 @@ class Table {
 	public function copy_to( string $new_table_name ): int {
 		$new_table_name = $this->table_worker::sanitize_table_name( $new_table_name );
 
-		if ( empty( $new_table_name ) ) {
+		if ( null === $new_table_name ) {
 			return 0;
 		}
 
