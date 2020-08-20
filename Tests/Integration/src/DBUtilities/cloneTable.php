@@ -26,7 +26,7 @@ class Test_CloneTable extends TestCase {
 		// Check that the result is true.
 		$this->assertTrue( $result );
 
-		$row = $this->get_target_last_row();
+		$row = $this->get_last_row( $this->target_table_name );
 
 		// Check that the target table exists.
 		$error = "Table '{$wpdb->dbname}.{$this->target_table_name}' doesn't exist";
@@ -44,38 +44,5 @@ class Test_CloneTable extends TestCase {
 
 		// Check that the result is false.
 		$this->assertFalse( $result );
-	}
-
-	private function create_table() {
-		global $wpdb;
-
-		$charset_collate = $wpdb->get_charset_collate();
-		$schema          = "
-			id bigint(20) unsigned NOT NULL auto_increment,
-			data longtext default NULL,
-			PRIMARY KEY  (id)";
-
-		$wpdb->query( "CREATE TEMPORARY TABLE `{$this->table_name}` ($schema) $charset_collate" );
-	}
-
-	private function add_row( $data ) {
-		global $wpdb;
-
-		$wpdb->insert(
-			$this->table_name,
-			[ 'data' => $data ],
-			[ 'data' => '%s' ]
-		);
-
-		return (int) $wpdb->insert_id;
-	}
-
-	private function get_target_last_row() {
-		global $wpdb;
-
-		return $wpdb->get_row(
-			"SELECT * FROM {$this->target_table_name} ORDER BY `id` DESC LIMIT 1;",
-			OBJECT
-		);
 	}
 }

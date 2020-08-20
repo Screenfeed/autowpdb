@@ -7,13 +7,12 @@
 
 namespace Screenfeed\AutoWPDB\Tests\Integration\src\DBUtilities;
 
+use Screenfeed\AutoWPDB\Tests\Integration\TemporaryTableTrait;
 use Screenfeed\AutoWPDB\Tests\Integration\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase {
-	protected $table_name        = 'wp_foobar';
-	protected $target_table_name = 'wp_targettable';
-	protected $drop_table        = false;
-	protected $drop_target_table = false;
+	use TemporaryTableTrait;
+
 	public $logs;
 
 	/**
@@ -23,6 +22,8 @@ abstract class TestCase extends BaseTestCase {
 		parent::setUp();
 		$this->logs = [];
 
+		$this->init_temporary_tables();
+
 		add_filter( 'screenfeed_autowpdb_can_log', [ $this, 'return_true' ] );
 	}
 
@@ -30,20 +31,10 @@ abstract class TestCase extends BaseTestCase {
 	 * Cleans up the test environment after each test.
 	 */
 	public function tearDown(): void {
-		global $wpdb;
-
 		parent::tearDown();
 		$this->logs = [];
 
-		if ( $this->drop_table ) {
-			$query  = "DROP TEMPORARY TABLE IF EXISTS `{$this->table_name}`";
-			$result = $wpdb->query( $query );
-		}
-
-		if ( $this->drop_target_table ) {
-			$query  = "DROP TEMPORARY TABLE IF EXISTS `{$this->target_table_name}`";
-			$result = $wpdb->query( $query );
-		}
+		$this->maybe_drop_temporary_tables();
 
 		remove_filter( 'screenfeed_autowpdb_can_log', [ $this, 'return_true' ] );
 		remove_filter( 'screenfeed_autowpdb_can_log', [ $this, 'return_false' ] );

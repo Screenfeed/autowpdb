@@ -68,37 +68,4 @@ class Test_Empty extends TestCase {
 
 		$this->assertSame( $result, 0 );
 	}
-
-	private function create_table() {
-		global $wpdb;
-
-		$charset_collate = $wpdb->get_charset_collate();
-		$schema          = "
-			id bigint(20) unsigned NOT NULL auto_increment,
-			data longtext default NULL,
-			PRIMARY KEY  (id)";
-
-		$wpdb->query( "CREATE TEMPORARY TABLE `{$this->table_name}` ($schema) $charset_collate" );
-	}
-
-	private function add_row( $data ) {
-		global $wpdb;
-
-		$wpdb->insert(
-			$this->table_name,
-			[ 'data' => $data ],
-			[ 'data' => '%s' ]
-		);
-
-		return (int) $wpdb->insert_id;
-	}
-
-	private function get_last_row() {
-		global $wpdb;
-
-		return $wpdb->get_row(
-			"SELECT * FROM {$this->table_name} ORDER BY `id` DESC LIMIT 1;",
-			ARRAY_A
-		);
-	}
 }

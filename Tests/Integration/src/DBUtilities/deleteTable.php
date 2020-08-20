@@ -13,7 +13,7 @@ class Test_DeleteTable extends TestCase {
 	protected $drop_table = true;
 
 	public function testShouldReturnTrue() {
-		$this->createTemporaryTable();
+		$this->create_table();
 
 		$result = DBUtilities::delete_table(
 			$this->table_name,
@@ -53,14 +53,5 @@ class Test_DeleteTable extends TestCase {
 
 		$this->assertFalse( $result );
 		$this->assertCount( 0, $this->logs );
-	}
-
-	private function createTemporaryTable() {
-		global $wpdb;
-
-		$schema          = 'file_id bigint(20) unsigned NOT NULL default 0';
-		$charset_collate = $wpdb->get_charset_collate();
-
-		$wpdb->query( "CREATE TEMPORARY TABLE `{$this->table_name}` ($schema) $charset_collate" );
 	}
 }

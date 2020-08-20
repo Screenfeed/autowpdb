@@ -52,28 +52,4 @@ class Test_Count extends TestCase {
 
 		$this->assertSame( 2, $result );
 	}
-
-	private function create_table() {
-		global $wpdb;
-
-		$charset_collate = $wpdb->get_charset_collate();
-		$schema          = "
-			id bigint(20) unsigned NOT NULL auto_increment,
-			data longtext default NULL,
-			PRIMARY KEY  (id)";
-
-		$wpdb->query( "CREATE TEMPORARY TABLE `{$this->table_name}` ($schema) $charset_collate" );
-	}
-
-	private function add_row( $data ) {
-		global $wpdb;
-
-		$wpdb->insert(
-			$this->table_name,
-			[ 'data' => $data ],
-			[ 'data' => '%s' ]
-		);
-
-		return (int) $wpdb->insert_id;
-	}
 }

@@ -18,9 +18,9 @@ class Test_CopyTo extends TestCase {
 	public function testShouldCloneTable() {
 		global $wpdb;
 
-		$this->create_table( $this->table_name );
-		$row1_id = $this->add_row( $this->table_name, 'foobar' );
-		$row2_id = $this->add_row( $this->table_name, 'barbaz' );
+		$this->create_table();
+		$row1_id = $this->add_row( 'foobar' );
+		$row2_id = $this->add_row( 'barbaz' );
 		$this->create_table( $this->target_table_name );
 
 		$table  = new Table( new CustomTable() );
@@ -52,38 +52,5 @@ class Test_CopyTo extends TestCase {
 
 		// Zero rows copied.
 		$this->assertSame( 0, $result );
-	}
-
-	private function create_table( $table_name ) {
-		global $wpdb;
-
-		$charset_collate = $wpdb->get_charset_collate();
-		$schema          = "
-			id bigint(20) unsigned NOT NULL auto_increment,
-			data longtext default NULL,
-			PRIMARY KEY  (id)";
-
-		$wpdb->query( "CREATE TEMPORARY TABLE `$table_name` ($schema) $charset_collate" );
-	}
-
-	private function add_row( $table_name, $data ) {
-		global $wpdb;
-
-		$wpdb->insert(
-			$table_name,
-			[ 'data' => $data ],
-			[ 'data' => '%s' ]
-		);
-
-		return (int) $wpdb->insert_id;
-	}
-
-	private function get_rows( $table_name ) {
-		global $wpdb;
-
-		return $wpdb->get_results(
-			"SELECT * FROM $table_name ORDER BY `id` ASC",
-			ARRAY_A
-		);
 	}
 }
