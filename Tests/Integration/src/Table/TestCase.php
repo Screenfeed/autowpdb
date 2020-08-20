@@ -7,21 +7,21 @@
 
 namespace Screenfeed\AutoWPDB\Tests\Integration\src\Table;
 
+use Screenfeed\AutoWPDB\Tests\Integration\LogsTrait;
 use Screenfeed\AutoWPDB\Tests\Integration\TemporaryTableTrait;
 use Screenfeed\AutoWPDB\Tests\Integration\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase {
+	use LogsTrait;
 	use TemporaryTableTrait;
-
-	public $logs;
 
 	/**
 	 * Prepares the test environment before each test.
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->logs = [];
 
+		$this->empty_logs();
 		$this->init_temporary_tables();
 
 		add_filter( 'screenfeed_autowpdb_can_log', [ $this, 'return_true' ] );
@@ -32,15 +32,11 @@ abstract class TestCase extends BaseTestCase {
 	 */
 	public function tearDown(): void {
 		parent::tearDown();
-		$this->logs = [];
 
+		$this->empty_logs();
 		$this->maybe_drop_temporary_tables();
 
 		remove_filter( 'screenfeed_autowpdb_can_log', [ $this, 'return_true' ] );
 		remove_filter( 'screenfeed_autowpdb_can_log', [ $this, 'return_false' ] );
-	}
-
-	public function log( $message ) {
-		$this->logs[] = $message;
 	}
 }

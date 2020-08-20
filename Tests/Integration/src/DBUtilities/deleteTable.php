@@ -23,7 +23,7 @@ class Test_DeleteTable extends TestCase {
 		);
 
 		$this->assertTrue( $result );
-		$this->assertCount( 0, $this->logs );
+		$this->assertCount( 0, $this->get_logs() );
 	}
 
 	public function testShouldReturnFalse() {
@@ -37,8 +37,8 @@ class Test_DeleteTable extends TestCase {
 		);
 
 		$this->assertFalse( $result );
-		$this->assertCount( 1, $this->logs );
-		$this->assertContains( $error, $this->logs );
+		$this->assertCount( 1, $this->get_logs() );
+		$this->assertContains( $error, $this->get_logs() );
 	}
 
 	public function testShouldFailWithoutLogging() {
@@ -52,6 +52,6 @@ class Test_DeleteTable extends TestCase {
 		);
 
 		$this->assertFalse( $result );
-		$this->assertCount( 0, $this->logs );
+		$this->assertCount( 0, $this->get_logs() );
 	}
 }

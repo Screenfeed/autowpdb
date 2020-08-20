@@ -23,7 +23,7 @@ class Test_CreateTable extends TestCase {
 		);
 
 		$this->assertTrue( $result );
-		$this->assertCount( 0, $this->logs );
+		$this->assertCount( 0, $this->get_logs() );
 	}
 
 	public function testShouldReturnFalseWhenDBError() {
@@ -38,9 +38,9 @@ class Test_CreateTable extends TestCase {
 		);
 
 		$this->assertFalse( $result );
-		$this->assertCount( 1, $this->logs );
+		$this->assertCount( 1, $this->get_logs() );
 
-		foreach ( $this->logs as $log ) {
+		foreach ( $this->get_logs() as $log ) {
 			$this->assertStringStartsWith( $error, $log );
 		}
 	}
@@ -57,7 +57,7 @@ class Test_CreateTable extends TestCase {
 		);
 
 		$this->assertFalse( $result );
-		$this->assertCount( 0, $this->logs );
+		$this->assertCount( 0, $this->get_logs() );
 	}
 
 	private function get_table_schema(): string {
