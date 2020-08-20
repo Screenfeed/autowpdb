@@ -1,9 +1,9 @@
 <?php
 
-namespace Screenfeed\AutoWPDB\Tests\Integration;
+namespace Screenfeed\AutoWPDB\Tests;
 
 trait LogsTrait {
-	public $logs = [];
+	private $logs = [];
 
 	public function empty_logs() {
 		$this->logs = [];

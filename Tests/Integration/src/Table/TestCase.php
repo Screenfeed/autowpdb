@@ -7,9 +7,9 @@
 
 namespace Screenfeed\AutoWPDB\Tests\Integration\src\Table;
 
-use Screenfeed\AutoWPDB\Tests\Integration\LogsTrait;
 use Screenfeed\AutoWPDB\Tests\Integration\TemporaryTableTrait;
 use Screenfeed\AutoWPDB\Tests\Integration\TestCase as BaseTestCase;
+use Screenfeed\AutoWPDB\Tests\LogsTrait;
 
 abstract class TestCase extends BaseTestCase {
 	use LogsTrait;

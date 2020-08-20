@@ -28,7 +28,7 @@ class Test_DeleteTable extends TestCase {
 		);
 
 		$this->assertTrue( $result );
-		$this->assertCount( 0, $this->logs );
+		$this->assertCount( 0, $this->get_logs() );
 	}
 
 	public function testShouldReturnFalseWhenQueryFails() {
@@ -49,8 +49,8 @@ class Test_DeleteTable extends TestCase {
 		$error = sprintf( 'Deletion of the DB table %s failed.', $this->table_name );
 
 		$this->assertFalse( $result );
-		$this->assertContains( $error, $this->logs );
-		$this->assertCount( 1, $this->logs );
+		$this->assertContains( $error, $this->get_logs() );
+		$this->assertCount( 1, $this->get_logs() );
 	}
 
 	public function testShouldReturnFalseWhenTableError() {
@@ -71,8 +71,8 @@ class Test_DeleteTable extends TestCase {
 		$error = sprintf( 'Deletion of the DB table %s failed.', $this->table_name );
 
 		$this->assertFalse( $result );
-		$this->assertContains( $error, $this->logs );
-		$this->assertCount( 1, $this->logs );
+		$this->assertContains( $error, $this->get_logs() );
+		$this->assertCount( 1, $this->get_logs() );
 	}
 
 	public function testShouldFailWithoutLogging() {
@@ -91,7 +91,7 @@ class Test_DeleteTable extends TestCase {
 		);
 
 		$this->assertFalse( $result );
-		$this->assertCount( 0, $this->logs );
+		$this->assertCount( 0, $this->get_logs() );
 	}
 
 	public function createMocks( $result = true ) {
