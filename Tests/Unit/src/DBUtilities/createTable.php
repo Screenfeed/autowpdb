@@ -18,10 +18,10 @@ class Test_CreateTable extends TestCase {
 	public function testShouldReturnTrue() {
 		$this->createMocks();
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'table_exists' => true,
 			'can_log'      => true,
-		];
+		] );
 
 		$result = DBUtilitiesUnit::create_table(
 			$this->table_name,
@@ -40,10 +40,10 @@ class Test_CreateTable extends TestCase {
 
 		$this->createMocks( $db_error );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'table_exists' => true,
 			'can_log'      => true,
-		];
+		] );
 
 		$result = DBUtilitiesUnit::create_table(
 			$this->table_name,
@@ -63,10 +63,10 @@ class Test_CreateTable extends TestCase {
 	public function testShouldReturnFalseWhenTableError() {
 		$this->createMocks();
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'table_exists' => false,
 			'can_log'      => true,
-		];
+		] );
 
 		$result = DBUtilitiesUnit::create_table(
 			$this->table_name,
@@ -88,10 +88,10 @@ class Test_CreateTable extends TestCase {
 
 		$this->createMocks( $db_error );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'table_exists' => true,
 			'can_log'      => false,
-		];
+		] );
 
 		$result = DBUtilitiesUnit::create_table(
 			$this->table_name,

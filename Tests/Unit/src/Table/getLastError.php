@@ -17,9 +17,9 @@ class Test_GetLastError extends TestCase {
 	public function testShouldReturnLastError() {
 		$table_definition = $this->createMock( TableDefinitionInterface::class );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'get_last_error' => 'An error.',
-		];
+		] );
 
 		$table  = new Table( $table_definition, DBUtilitiesUnit::class );
 		$result = $table->get_last_error();

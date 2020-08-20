@@ -21,12 +21,12 @@ class Test_Exists extends TestCase {
 			->method( 'get_table_name' )
 			->willReturn( 'custom_table' );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'table_exists' => function( $table_name ) {
 				$this->assertSame( 'custom_table', $table_name );
 				return true;
 			},
-		];
+		] );
 
 		$table  = new Table( $table_definition, DBUtilitiesUnit::class );
 		$result = $table->exists();

@@ -21,12 +21,12 @@ class Test_Empty extends TestCase {
 			->method( 'get_table_name' )
 			->willReturn( 'custom_table' );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'empty_table' => function( $table_name ) {
 				$this->assertSame( 'custom_table', $table_name );
 				return 3;
 			},
-		];
+		] );
 
 		$table  = new Table( $table_definition, DBUtilitiesUnit::class );
 		$result = $table->empty();

@@ -21,12 +21,12 @@ class Test_Reinit extends TestCase {
 			->method( 'get_table_name' )
 			->willReturn( 'custom_table' );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'reinit_table' => function( $table_name ) {
 				$this->assertSame( 'custom_table', $table_name );
 				return true;
 			},
-		];
+		] );
 
 		$table  = new Table( $table_definition, DBUtilitiesUnit::class );
 		$result = $table->reinit();

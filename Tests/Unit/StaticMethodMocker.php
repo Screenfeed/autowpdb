@@ -29,6 +29,14 @@ namespace Screenfeed\AutoWPDB\Tests\Unit;
 trait StaticMethodMocker {
 	public static $mocks = [];
 
+	public final static function empty_mocks() {
+		static::$mocks = [];
+	}
+
+	public final static function set_mocks( array $mocks ) {
+		static::$mocks = $mocks;
+	}
+
 	protected final static function maybe_mock_static( $method ) {
 		if ( ! isset( static::$mocks[ $method ] ) ) {
 			$args = func_get_args();

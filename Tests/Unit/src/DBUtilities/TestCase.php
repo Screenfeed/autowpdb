@@ -24,7 +24,7 @@ abstract class TestCase extends BaseTestCase {
 		parent::setUp();
 
 		$this->empty_logs();
-		DBUtilitiesUnit::$mocks = [];
+		DBUtilitiesUnit::empty_mocks();
 	}
 
 	/**
@@ -34,6 +34,6 @@ abstract class TestCase extends BaseTestCase {
 		parent::tearDown();
 
 		$this->empty_logs();
-		DBUtilitiesUnit::$mocks = [];
+		DBUtilitiesUnit::empty_mocks();
 	}
 }

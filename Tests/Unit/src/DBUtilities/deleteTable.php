@@ -15,10 +15,10 @@ class Test_DeleteTable extends TestCase {
 	public function testShouldReturnTrue() {
 		$this->createMocks( true );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'table_exists' => false,
 			'can_log'      => true,
-		];
+		] );
 
 		$result = DBUtilitiesUnit::delete_table(
 			$this->table_name,
@@ -34,10 +34,10 @@ class Test_DeleteTable extends TestCase {
 	public function testShouldReturnFalseWhenQueryFails() {
 		$this->createMocks( false );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'table_exists' => false,
 			'can_log'      => true,
-		];
+		] );
 
 		$result = DBUtilitiesUnit::delete_table(
 			$this->table_name,
@@ -56,10 +56,10 @@ class Test_DeleteTable extends TestCase {
 	public function testShouldReturnFalseWhenTableError() {
 		$this->createMocks( true );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'table_exists' => true,
 			'can_log'      => true,
-		];
+		] );
 
 		$result = DBUtilitiesUnit::delete_table(
 			$this->table_name,
@@ -78,10 +78,10 @@ class Test_DeleteTable extends TestCase {
 	public function testShouldFailWithoutLogging() {
 		$this->createMocks( false );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'table_exists' => false,
 			'can_log'      => false,
-		];
+		] );
 
 		$result = DBUtilitiesUnit::delete_table(
 			$this->table_name,

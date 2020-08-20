@@ -25,14 +25,14 @@ class Test_Create extends TestCase {
 			->method( 'get_table_schema' )
 			->willReturn( 'custom_table_schema' );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'create_table' => function( $table_name, $schema_query, $args ) {
 				$this->assertSame( 'custom_table', $table_name );
 				$this->assertSame( 'custom_table_schema', $schema_query );
 				$this->assertSame( [ 'foo' => 'bar' ], $args );
 				return true;
 			},
-		];
+		] );
 
 		$table  = new Table( $table_definition, DBUtilitiesUnit::class );
 		$result = $table->create( [ 'foo' => 'bar' ] );

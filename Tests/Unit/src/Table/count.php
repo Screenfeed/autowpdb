@@ -21,26 +21,26 @@ class Test_Count extends TestCase {
 			->method( 'get_table_name' )
 			->willReturn( 'custom_table' );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'count_table_rows' => function( $table_name, $column ) {
 				$this->assertSame( 'custom_table', $table_name );
 				$this->assertSame( '*', $column );
 				return 3;
 			},
-		];
+		] );
 
 		$table  = new Table( $table_definition, DBUtilitiesUnit::class );
 		$result = $table->count();
 
 		$this->assertSame( 3, $result );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'count_table_rows' => function( $table_name, $column ) {
 				$this->assertSame( 'custom_table', $table_name );
 				$this->assertSame( ' id ', $column );
 				return 6;
 			},
-		];
+		] );
 
 		$result = $table->count( ' id ' );
 

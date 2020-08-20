@@ -21,13 +21,13 @@ class Test_Delete extends TestCase {
 			->method( 'get_table_name' )
 			->willReturn( 'custom_table' );
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'delete_table' => function( $table_name, $args ) {
 				$this->assertSame( 'custom_table', $table_name );
 				$this->assertSame( [ 'foo' => 'bar' ], $args );
 				return true;
 			},
-		];
+		] );
 
 		$table  = new Table( $table_definition, DBUtilitiesUnit::class );
 		$result = $table->delete( [ 'foo' => 'bar' ] );

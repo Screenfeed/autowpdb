@@ -39,7 +39,7 @@ class Test_PrepareValuesList extends TestCase {
 				}
 			);
 
-		DBUtilitiesUnit::$mocks = [
+		DBUtilitiesUnit::set_mocks( [
 			'quote_string' => function ( $value ) {
 				switch ( $value ) {
 					case '2':
@@ -52,6 +52,6 @@ class Test_PrepareValuesList extends TestCase {
 				}
 				return $return;
 			},
-		];
+		] );
 	}
 }
