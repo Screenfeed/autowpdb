@@ -28,6 +28,7 @@ class Test___toString extends TestCase {
 
 		$result = $table->__toString();
 
+		$this->assertIsString( $result );
 		$this->assertSame( json_encode( $this->values ), $result );
 
 		$table = $this->createMocks( true );

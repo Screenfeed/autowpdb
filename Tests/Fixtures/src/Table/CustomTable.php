@@ -11,6 +11,7 @@ use Screenfeed\AutoWPDB\TableDefinition\AbstractTableDefinition;
 class CustomTable extends AbstractTableDefinition {
 	protected $schema;
 	protected $short_name;
+	protected $table_is_global;
 
 	protected $default_schema = "
 	file_id bigint(20) unsigned NOT NULL auto_increment,
@@ -29,6 +30,7 @@ class CustomTable extends AbstractTableDefinition {
 	KEY status (status),
 	KEY modified (modified)";
 	protected $default_short_name = 'foobar';
+	protected $default_table_is_global = true;
 
 	public function get_table_version(): int {
 		return 102;
@@ -41,12 +43,11 @@ class CustomTable extends AbstractTableDefinition {
 		return $this->short_name;
 	}
 
-	public function set_table_short_name( $short_name ) {
-		$this->short_name = $short_name;
-	}
-
 	public function is_table_global(): bool {
-		return true;
+		if ( ! isset( $this->table_is_global ) ) {
+			$this->table_is_global = $this->default_table_is_global;
+		}
+		return $this->table_is_global;
 	}
 
 	public function get_primary_key(): string {
@@ -92,7 +93,19 @@ class CustomTable extends AbstractTableDefinition {
 		return $this->schema;
 	}
 
+	/** ----------------------------------------------------------------------------------------- */
+	/** SETTERS ================================================================================= */
+	/** ----------------------------------------------------------------------------------------- */
+
+	public function set_table_short_name( $short_name ) {
+		$this->short_name = $short_name;
+	}
+
 	public function set_table_schema( $schema ) {
 		$this->schema = $schema;
+	}
+
+	public function set_table_is_global( $table_is_global ) {
+		$this->table_is_global = $table_is_global;
 	}
 }
