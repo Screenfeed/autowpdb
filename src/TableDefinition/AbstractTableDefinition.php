@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Screenfeed\AutoWPDB\TableDefinition;
 
 use JsonSerializable;
+use Screenfeed\AutoWPDB\DBUtilities;
 
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
 
@@ -37,7 +38,18 @@ abstract class AbstractTableDefinition implements TableDefinitionInterface, Json
 	 * @var   string
 	 * @since 0.3
 	 */
-	protected $table_worker = '\Screenfeed\AutoWPDB\DBUtilities';
+	protected $table_worker;
+
+	/**
+	 * Get things started.
+	 *
+	 * @since 0.3
+	 *
+	 * @param string $table_worker Full name of the static class to use to perform the operations. Default is '\Screenfeed\AutoWPDB\DBUtilities'.
+	 */
+	public function __construct( string $table_worker = '' ) {
+		$this->table_worker = ! empty( $table_worker ) ? ltrim( $table_worker, '\\' ) : DBUtilities::class;
+	}
 
 	/**
 	 * Get the table name.
