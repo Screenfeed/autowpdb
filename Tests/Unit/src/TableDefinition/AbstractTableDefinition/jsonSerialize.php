@@ -2,6 +2,7 @@
 namespace Screenfeed\AutoWPDB\Tests\Unit\src\TableDefinition\AbstractTableDefinition;
 
 use Screenfeed\AutoWPDB\TableDefinition\AbstractTableDefinition;
+use Screenfeed\AutoWPDB\Tests\Unit\TestCase;
 
 /**
  * Tests for AbstractTableDefinition::jsonSerialize().

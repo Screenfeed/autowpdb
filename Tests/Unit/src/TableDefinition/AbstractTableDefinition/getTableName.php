@@ -3,7 +3,7 @@ namespace Screenfeed\AutoWPDB\Tests\Unit\src\TableDefinition\AbstractTableDefini
 
 use Screenfeed\AutoWPDB\TableDefinition\AbstractTableDefinition;
 use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesUnit;
-//use Screenfeed\AutoWPDB\Tests\Fixtures\src\Table\CustomTable;
+use Screenfeed\AutoWPDB\Tests\Unit\TestCase;
 
 /**
  * Tests for AbstractTableDefinition::get_table_name().
@@ -12,21 +12,22 @@ use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesUnit;
  * @group  AbstractTableDefinition
  */
 class Test_GetTableName extends TestCase {
-	private $network_prefix = 'network_prefix_';
-	private $site_prefix    = 'site_prefix_';
+	protected $table_short_name = 'foobar';
+	private $network_prefix     = 'network_prefix_';
+	private $site_prefix        = 'site_prefix_';
 
 	public function testShouldReturnFullTableName() {
 		$table = $this->createMocks( false );
 
 		$result = $table->get_table_name();
 
-		$this->assertSame( $this->site_prefix . $this->short_table_name, $result );
+		$this->assertSame( $this->site_prefix . $this->table_short_name, $result );
 
 		$table = $this->createMocks( true );
 
 		$result = $table->get_table_name();
 
-		$this->assertSame( $this->network_prefix . $this->short_table_name, $result );
+		$this->assertSame( $this->network_prefix . $this->table_short_name, $result );
 	}
 
 	public function createMocks( $is_table_global ) {
@@ -53,7 +54,7 @@ class Test_GetTableName extends TestCase {
 			->expects( $this->once() )
 			->method( 'get_table_short_name' )
 			->with()
-			->willReturn( $this->short_table_name );
+			->willReturn( $this->table_short_name );
 
 		return $table;
 	}

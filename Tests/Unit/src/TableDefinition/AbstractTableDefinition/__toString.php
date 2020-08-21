@@ -3,6 +3,7 @@ namespace Screenfeed\AutoWPDB\Tests\Unit\src\TableDefinition\AbstractTableDefini
 
 use Brain\Monkey\Functions;
 use Screenfeed\AutoWPDB\TableDefinition\AbstractTableDefinition;
+use Screenfeed\AutoWPDB\Tests\Unit\TestCase;
 
 /**
  * Tests for AbstractTableDefinition::__toString().
