@@ -26,6 +26,8 @@ abstract class TestCase extends PHPUnitTestCase {
 	 * Cleans up the test environment after each test.
 	 */
 	protected function tearDown(): void {
+		unset( $GLOBALS['wpdb'] );
+
 		Monkey\tearDown();
 		parent::tearDown();
 	}
