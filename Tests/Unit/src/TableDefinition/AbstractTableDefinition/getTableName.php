@@ -17,6 +17,8 @@ class Test_GetTableName extends TestCase {
 	private $site_prefix        = 'site_prefix_';
 
 	public function testShouldReturnFullTableName() {
+		global $wpdb;
+
 		$table = $this->createMocks( false );
 
 		$result = $table->get_table_name();
