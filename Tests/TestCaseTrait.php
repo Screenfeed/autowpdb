@@ -63,7 +63,7 @@ trait TestCaseTrait {
 	protected function getPropertyValue( $property, $class ) {
 		$ref = $this->get_reflective_property( $property, $class );
 
-		return $ref->getValue();
+		return $ref->getValue( $class );
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
