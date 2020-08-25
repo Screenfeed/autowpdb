@@ -108,20 +108,11 @@ class TableUpgrader {
 		$this->upgrade_hook      = isset( $args['upgrade_hook'] ) ? $args['upgrade_hook'] : 'admin_menu';
 		$this->upgrade_hook_prio = isset( $args['upgrade_hook_prio'] ) ? (int) $args['upgrade_hook_prio'] : 8;
 		$this->logger            = isset( $args['logger'] ) ? $args['logger'] : null;
-
-		if ( ! $this->table_is_up_to_date() ) {
-			/**
-			 * The option doesn't exist or is not up-to-date: we must upgrade the table before declaring it ready.
-			 * See $this->maybe_upgrade_table() for the upgrade.
-			 */
-			return;
-		}
-
-		$this->set_table_ready();
 	}
 
 	/**
 	 * Init:
+	 * - Init the "up-to-date" status.
 	 * - Launch hooks.
 	 *
 	 * @since 0.1
@@ -129,11 +120,20 @@ class TableUpgrader {
 	 * @return void
 	 */
 	public function init() {
-		if ( empty( $this->upgrade_hook ) ) {
-			return;
+		if ( $this->table_is_up_to_date() ) {
+			/**
+			 * The option exists and is up-to-date.
+			 */
+			$this->set_table_ready();
 		}
+		/**
+		 * At this point, the option doesn't exist or is not up-to-date: we must upgrade the table before declaring it ready.
+		 * See $this->maybe_upgrade_table() for the upgrade.
+		 */
 
-		add_action( $this->upgrade_hook, [ $this, 'maybe_upgrade_table' ], $this->upgrade_hook_prio );
+		if ( ! empty( $this->upgrade_hook ) ) {
+			add_action( $this->upgrade_hook, [ $this, 'maybe_upgrade_table' ], $this->upgrade_hook_prio );
+		}
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -155,7 +155,7 @@ class TableUpgrader {
 		}
 
 		if ( $this->handle_downgrade ) {
-			return $table_version !== $this->table->get_table_definition()->get_table_version();
+			return $table_version === $this->table->get_table_definition()->get_table_version();
 		}
 
 		return $table_version >= $this->table->get_table_definition()->get_table_version();
@@ -231,8 +231,6 @@ class TableUpgrader {
 	 * @return void
 	 */
 	public function maybe_upgrade_table() {
-		global $wpdb;
-
 		if ( $this->table_is_up_to_date() ) {
 			// The table has the right version.
 			$this->set_table_ready();
