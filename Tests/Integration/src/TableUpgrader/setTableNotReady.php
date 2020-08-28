@@ -12,11 +12,11 @@ class Test_SetTableNotReady extends TestCase {
 	public function testShouldSetTableReady() {
 		$this->init();
 
-		$this->invokeMethod( 'set_table_ready', $this->upgrader );
+		$this->invokeMethod( $this->upgrader, 'set_table_ready' );
 
 		$this->assertTableIsReady();
 
-		$this->invokeMethod( 'set_table_not_ready', $this->upgrader );
+		$this->invokeMethod( $this->upgrader, 'set_table_not_ready' );
 
 		$this->assertTableIsNotReady();
 	}

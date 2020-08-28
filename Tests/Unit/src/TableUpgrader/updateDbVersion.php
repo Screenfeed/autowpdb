@@ -17,18 +17,18 @@ class Test_UpdateDbVersion extends TestCase {
 
 	public function testShouldUpdateNetworkVersion() {
 		$upgrader = $this->createMocks( true, true );
-		$this->invokeMethod( 'update_db_version', $upgrader );
+		$this->invokeMethod( $upgrader, 'update_db_version' );
 	}
 
 	public function testShouldUpdateSiteVersion() {
 		$upgrader = $this->createMocks( false, true );
-		$this->invokeMethod( 'update_db_version', $upgrader );
+		$this->invokeMethod( $upgrader, 'update_db_version' );
 
 		$upgrader = $this->createMocks( true, false );
-		$this->invokeMethod( 'update_db_version', $upgrader );
+		$this->invokeMethod( $upgrader, 'update_db_version' );
 
 		$upgrader = $this->createMocks( false, false );
-		$this->invokeMethod( 'update_db_version', $upgrader );
+		$this->invokeMethod( $upgrader, 'update_db_version' );
 	}
 
 	public function createMocks( $is_table_global, $is_multisite ) {

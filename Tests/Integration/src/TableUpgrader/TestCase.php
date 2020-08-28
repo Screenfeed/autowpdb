@@ -79,7 +79,7 @@ abstract class TestCase extends BaseTestCase {
 	}
 
 	protected function deleteDbVersion() {
-		$this->invokeMethod( 'delete_db_version', $this->upgrader );
+		$this->invokeMethod( $this->upgrader, 'delete_db_version' );
 	}
 
 	protected function assertDbVersionIs( $version = null ) {
@@ -96,7 +96,7 @@ abstract class TestCase extends BaseTestCase {
 		$table_short_name = $this->table_def->get_table_short_name();
 		$table_name       = $this->table_def->get_table_name();
 
-		$this->assertTrue( $this->getPropertyValue( 'table_ready', $this->upgrader ) );
+		$this->assertTrue( $this->getPropertyValue( $this->upgrader, 'table_ready' ) );
 		$this->assertObjectHasAttribute( $table_short_name, $wpdb );
 		$this->assertSame( $wpdb->$table_short_name, $table_name );
 
@@ -112,7 +112,7 @@ abstract class TestCase extends BaseTestCase {
 
 		$table_short_name = $this->table_def->get_table_short_name();
 
-		$this->assertFalse( $this->getPropertyValue( 'table_ready', $this->upgrader ) );
+		$this->assertFalse( $this->getPropertyValue( $this->upgrader, 'table_ready' ) );
 		$this->assertObjectNotHasAttribute( $table_short_name, $wpdb );
 
 		if ( $this->table_def->is_table_global() ) {

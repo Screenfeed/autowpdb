@@ -18,8 +18,8 @@ class Test_DeleteTable extends TestCase {
 		);
 
 		// Set the table ready without creating it.
-		$this->invokeMethod( 'set_table_ready', $this->upgrader );
-		$this->invokeMethod( 'update_db_version', $this->upgrader );
+		$this->invokeMethod( $this->upgrader, 'set_table_ready' );
+		$this->invokeMethod( $this->upgrader, 'update_db_version' );
 
 		$this->upgrader->delete_table();
 

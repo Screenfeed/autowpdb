@@ -18,7 +18,7 @@ class Test_TableIsReady extends TestCase {
 		$table    = $this->createMock( Table::class );
 		$upgrader = new TableUpgrader( $table );
 
-		$this->setPropertyValue( 'table_ready', $upgrader, true );
+		$this->setPropertyValue( $upgrader, 'table_ready', true );
 
 		$this->assertTrue( $upgrader->table_is_ready() );
 	}
@@ -27,7 +27,7 @@ class Test_TableIsReady extends TestCase {
 		$table    = $this->createMock( Table::class );
 		$upgrader = new TableUpgrader( $table );
 
-		$this->setPropertyValue( 'table_ready', $upgrader, false );
+		$this->setPropertyValue( $upgrader, 'table_ready', false );
 
 		$this->assertFalse( $upgrader->table_is_ready() );
 	}

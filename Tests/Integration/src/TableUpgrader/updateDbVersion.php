@@ -16,7 +16,7 @@ class Test_UpdateDbVersion extends TestCase {
 
 		$this->deleteDbVersion();
 
-		$this->invokeMethod( 'update_db_version', $this->upgrader );
+		$this->invokeMethod( $this->upgrader, 'update_db_version' );
 
 		$this->assertSame( $expected, $this->upgrader->get_db_version() );
 

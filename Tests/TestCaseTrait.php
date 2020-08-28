@@ -9,32 +9,32 @@ use ReflectionProperty;
 trait TestCaseTrait {
 
 	/**
-	 * Reset the value of a private/protected property.
+	 * Reset the value of a private/protected property to null.
 	 *
-	 * @param string        $property Property name for which to gain access.
 	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 * @param string        $property Property name for which to gain access.
 	 *
 	 * @return mixed                  The previous value of the property.
 	 * @throws ReflectionException    Throws an exception if property does not exist.
 	 *
 	 */
-	protected function resetPropertyValue( $property, $class ) {
-		return $this->setPropertyValue( $property, $class, null );
+	protected function resetPropertyValue( $class, $property ) {
+		return $this->setPropertyValue( $class, $property, null );
 	}
 
 	/**
 	 * Set the value of a private/protected property.
 	 *
-	 * @param string        $property Property name for which to gain access.
 	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 * @param string        $property Property name for which to gain access.
 	 * @param mixed         $value    The value to set to the property.
 	 *
 	 * @return mixed                  The previous value of the property.
 	 * @throws ReflectionException    Throws an exception if property does not exist.
 	 *
 	 */
-	protected function setPropertyValue( $property, $class, $value ) {
-		$ref = $this->get_reflective_property( $property, $class );
+	protected function setPropertyValue( $class, $property, $value ) {
+		$ref = $this->get_reflective_property( $class, $property );
 
 		if ( is_object( $class ) ) {
 			$previous = $ref->getValue( $class );
@@ -52,15 +52,15 @@ trait TestCaseTrait {
 	/**
 	 * Get the value of a private/protected property.
 	 *
-	 * @param string        $property Property name for which to gain access.
 	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 * @param string        $property Property name for which to gain access.
 	 *
 	 * @return mixed
 	 * @throws ReflectionException    Throws an exception if property does not exist.
 	 *
 	 */
-	protected function getPropertyValue( $property, $class ) {
-		$ref = $this->get_reflective_property( $property, $class );
+	protected function getPropertyValue( $class, $property ) {
+		$ref = $this->get_reflective_property( $class, $property );
 
 		return $ref->getValue( $class );
 	}
@@ -68,24 +68,23 @@ trait TestCaseTrait {
 	/**
 	 * Invoke a private/protected method.
 	 *
+	 * @param string|object $class  Class name for a static method, or instance for an instance method.
 	 * @param string        $method Method name for which to gain access.
-	 * @param object|string $class  An instance of the target class, or its name.
 	 *
-	 * @return ReflectionMethod
-	 * @throws ReflectionException Throws an exception if method does not exist.
+	 * @return mixed                The method result.
+	 * @throws ReflectionException  Throws an exception upon failure.
 	 *
 	 */
-	protected function invokeMethod( $method, $class ) {
+	protected function invokeMethod( $class, $method ) {
 		if ( is_string( $class ) ) {
 			$class_name = $class;
 		} else {
 			$class_name = get_class( $class );
 		}
 
-		$method = $this->get_reflective_method( $method, $class_name );
-		$method->invoke( $class );
+		$method = $this->get_reflective_method( $class_name, $method );
 
-		return $method;
+		return $method->invoke( $class );
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -95,15 +94,15 @@ trait TestCaseTrait {
 	/**
 	 * Get reflective access to a private/protected method.
 	 *
-	 * @param string $method_name Method name for which to gain access.
-	 * @param string $class_name  Name of the target class.
+	 * @param string|object $class  Class name for a static method, or instance for an instance method.
+	 * @param string        $method Method name for which to gain access.
 	 *
 	 * @return ReflectionMethod
 	 * @throws ReflectionException Throws an exception if method does not exist.
 	 *
 	 */
-	protected function get_reflective_method( $method_name, $class_name ) {
-		$method = new ReflectionMethod( $class_name, $method_name );
+	protected function get_reflective_method( $class, $method ) {
+		$method = new ReflectionMethod( $class, $method );
 		$method->setAccessible( true );
 
 		return $method;
@@ -112,15 +111,15 @@ trait TestCaseTrait {
 	/**
 	 * Get reflective access to a private/protected property.
 	 *
-	 * @param string       $property_name Property name for which to gain access.
-	 * @param string|mixed $class_name    Class name or instance.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 * @param string        $property Property name for which to gain access.
 	 *
 	 * @return ReflectionProperty
 	 * @throws ReflectionException Throws an exception if property does not exist.
 	 *
 	 */
-	protected function get_reflective_property( $property_name, $class_name ) {
-		$property = new ReflectionProperty( $class_name, $property_name );
+	protected function get_reflective_property( $class, $property ) {
+		$property = new ReflectionProperty( $class, $property );
 		$property->setAccessible( true );
 
 		return $property;
@@ -129,17 +128,25 @@ trait TestCaseTrait {
 	/**
 	 * Set the value of a private/protected property.
 	 *
-	 * @param mixed  $value    The value to set for the property.
-	 * @param string $property Property name for which to gain access.
-	 * @param mixed  $instance Instance of the target object.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 * @param string        $property Property name for which to gain access.
+	 * @param mixed         $value    The value to set for the property.
 	 *
 	 * @return ReflectionProperty
 	 * @throws ReflectionException Throws an exception if property does not exist.
 	 *
 	 */
-	protected function set_reflective_property( $value, $property, $instance ) {
-		$property = $this->get_reflective_property( $property, $instance );
-		$property->setValue( $instance, $value );
+	protected function set_reflective_property( $class, $property, $value ) {
+		$property = $this->get_reflective_property( $class, $property );
+
+		if ( is_object( $class ) ) {
+			// Instance property.
+			$ref->setValue( $class, $value );
+		} else {
+			// Static property.
+			$ref->setValue( $value );
+		}
+
 		$property->setAccessible( false );
 
 		return $property;

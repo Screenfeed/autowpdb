@@ -18,9 +18,9 @@ class Test_SetTableNotReady extends TestCase {
 		global $wpdb;
 
 		$upgrader = $this->createMocks( true );
-		$this->invokeMethod( 'set_table_not_ready', $upgrader );
+		$this->invokeMethod( $upgrader, 'set_table_not_ready' );
 
-		$this->assertFalse( $this->getPropertyValue( 'table_ready', $upgrader ) );
+		$this->assertFalse( $this->getPropertyValue( $upgrader, 'table_ready' ) );
 		$this->assertObjectNotHasAttribute( 'table_short_name', $wpdb );
 		$this->assertNotContains( 'table_short_name', $wpdb->global_tables );
 		$this->assertContains( 'table_short_name', $wpdb->tables );
@@ -30,9 +30,9 @@ class Test_SetTableNotReady extends TestCase {
 		global $wpdb;
 
 		$upgrader = $this->createMocks( false );
-		$this->invokeMethod( 'set_table_not_ready', $upgrader );
+		$this->invokeMethod( $upgrader, 'set_table_not_ready' );
 
-		$this->assertFalse( $this->getPropertyValue( 'table_ready', $upgrader ) );
+		$this->assertFalse( $this->getPropertyValue( $upgrader, 'table_ready' ) );
 		$this->assertObjectNotHasAttribute( 'table_short_name', $wpdb );
 		$this->assertContains( 'table_short_name', $wpdb->global_tables );
 		$this->assertNotContains( 'table_short_name', $wpdb->tables );

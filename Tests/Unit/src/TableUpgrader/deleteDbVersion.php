@@ -17,18 +17,18 @@ class Test_DeleteDbVersion extends TestCase {
 
 	public function testShouldDeleteNetworkVersion() {
 		$upgrader = $this->createMocks( true, true );
-		$this->invokeMethod( 'delete_db_version', $upgrader );
+		$this->invokeMethod( $upgrader, 'delete_db_version' );
 	}
 
 	public function testShouldDeleteSiteVersion() {
 		$upgrader = $this->createMocks( false, true );
-		$this->invokeMethod( 'delete_db_version', $upgrader );
+		$this->invokeMethod( $upgrader, 'delete_db_version' );
 
 		$upgrader = $this->createMocks( true, false );
-		$this->invokeMethod( 'delete_db_version', $upgrader );
+		$this->invokeMethod( $upgrader, 'delete_db_version' );
 
 		$upgrader = $this->createMocks( false, false );
-		$this->invokeMethod( 'delete_db_version', $upgrader );
+		$this->invokeMethod( $upgrader, 'delete_db_version' );
 	}
 
 	public function createMocks( $is_table_global, $is_multisite ) {

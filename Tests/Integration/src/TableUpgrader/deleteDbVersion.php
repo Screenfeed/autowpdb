@@ -16,7 +16,7 @@ class Test_DeleteDbVersion extends TestCase {
 
 		$this->assertSame( 106, $this->upgrader->get_db_version() );
 
-		$this->invokeMethod( 'delete_db_version', $this->upgrader );
+		$this->invokeMethod( $this->upgrader, 'delete_db_version' );
 
 		$this->assertSame( 0, $this->upgrader->get_db_version() );
 	}

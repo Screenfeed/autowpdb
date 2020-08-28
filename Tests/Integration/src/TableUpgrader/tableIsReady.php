@@ -12,7 +12,7 @@ class Test_TableIsReady extends TestCase {
 	public function testShouldReturnTrue() {
 		$this->init();
 
-		$this->invokeMethod( 'set_table_ready', $this->upgrader );
+		$this->invokeMethod( $this->upgrader, 'set_table_ready' );
 
 		$this->assertTrue( $this->upgrader->table_is_ready() );
 
