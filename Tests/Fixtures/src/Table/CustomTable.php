@@ -9,10 +9,12 @@ use Screenfeed\AutoWPDB\TableDefinition\AbstractTableDefinition;
  * @since 0.3
  */
 class CustomTable extends AbstractTableDefinition {
+	protected $table_version;
 	protected $schema;
 	protected $short_name;
 	protected $table_is_global;
 
+	protected $default_table_version = 102;
 	protected $default_schema = "
 	file_id bigint(20) unsigned NOT NULL auto_increment,
 	file_date datetime NOT NULL default '0000-00-00 00:00:00',
@@ -33,7 +35,10 @@ class CustomTable extends AbstractTableDefinition {
 	protected $default_table_is_global = true;
 
 	public function get_table_version(): int {
-		return 102;
+		if ( ! isset( $this->table_version ) ) {
+			$this->table_version = $this->default_table_version;
+		}
+		return $this->table_version;
 	}
 
 	public function get_table_short_name(): string {
@@ -96,6 +101,10 @@ class CustomTable extends AbstractTableDefinition {
 	/** ----------------------------------------------------------------------------------------- */
 	/** SETTERS ================================================================================= */
 	/** ----------------------------------------------------------------------------------------- */
+
+	public function set_table_version( $table_version ) {
+		$this->table_version = $table_version;
+	}
 
 	public function set_table_short_name( $short_name ) {
 		$this->short_name = $short_name;
