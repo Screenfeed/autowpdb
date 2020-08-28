@@ -2,7 +2,6 @@
 
 namespace Screenfeed\AutoWPDB\Tests;
 
-use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -66,6 +65,29 @@ trait TestCaseTrait {
 		return $ref->getValue( $class );
 	}
 
+	/**
+	 * Invoke a private/protected method.
+	 *
+	 * @param string        $method Method name for which to gain access.
+	 * @param object|string $class  An instance of the target class, or its name.
+	 *
+	 * @return ReflectionMethod
+	 * @throws ReflectionException Throws an exception if method does not exist.
+	 *
+	 */
+	protected function invokeMethod( $method, $class ) {
+		if ( is_string( $class ) ) {
+			$class_name = $class;
+		} else {
+			$class_name = get_class( $class );
+		}
+
+		$method = $this->get_reflective_method( $method, $class_name );
+		$method->invoke( $class );
+
+		return $method;
+	}
+
 	/** ----------------------------------------------------------------------------------------- */
 	/** REFLECTIONS ============================================================================= */
 	/** ----------------------------------------------------------------------------------------- */
@@ -81,8 +103,7 @@ trait TestCaseTrait {
 	 *
 	 */
 	protected function get_reflective_method( $method_name, $class_name ) {
-		$class  = new ReflectionClass( $class_name );
-		$method = $class->getMethod( $method_name );
+		$method = new ReflectionMethod( $class_name, $method_name );
 		$method->setAccessible( true );
 
 		return $method;
@@ -91,16 +112,15 @@ trait TestCaseTrait {
 	/**
 	 * Get reflective access to a private/protected property.
 	 *
-	 * @param string       $property Property name for which to gain access.
-	 * @param string|mixed $class    Class name or instance.
+	 * @param string       $property_name Property name for which to gain access.
+	 * @param string|mixed $class_name    Class name or instance.
 	 *
 	 * @return ReflectionProperty
 	 * @throws ReflectionException Throws an exception if property does not exist.
 	 *
 	 */
-	protected function get_reflective_property( $property, $class ) {
-		$class    = new ReflectionClass( $class );
-		$property = $class->getProperty( $property );
+	protected function get_reflective_property( $property_name, $class_name ) {
+		$property = new ReflectionProperty( $class_name, $property_name );
 		$property->setAccessible( true );
 
 		return $property;
