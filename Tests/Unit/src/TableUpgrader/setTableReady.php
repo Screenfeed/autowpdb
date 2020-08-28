@@ -17,10 +17,8 @@ class Test_SetTableReady extends TestCase {
 	public function testShouldSetNetworkTableReady() {
 		global $wpdb;
 
-		$method   = $this->get_reflective_method( 'set_table_ready', TableUpgrader::class );
 		$upgrader = $this->createMocks( true );
-
-		$method->invoke( $upgrader );
+		$this->invokeMethod( 'set_table_ready', $upgrader );
 
 		$this->assertTrue( $this->getPropertyValue( 'table_ready', $upgrader ) );
 		$this->assertObjectHasAttribute( 'table_short_name', $wpdb );
@@ -32,10 +30,8 @@ class Test_SetTableReady extends TestCase {
 	public function testShouldSetSiteTableReady() {
 		global $wpdb;
 
-		$method   = $this->get_reflective_method( 'set_table_ready', TableUpgrader::class );
 		$upgrader = $this->createMocks( false );
-
-		$method->invoke( $upgrader );
+		$this->invokeMethod( 'set_table_ready', $upgrader );
 
 		$this->assertTrue( $this->getPropertyValue( 'table_ready', $upgrader ) );
 		$this->assertObjectHasAttribute( 'table_short_name', $wpdb );

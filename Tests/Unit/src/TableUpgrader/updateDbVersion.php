@@ -16,25 +16,19 @@ use Screenfeed\AutoWPDB\Tests\Unit\TestCase;
 class Test_UpdateDbVersion extends TestCase {
 
 	public function testShouldUpdateNetworkVersion() {
-		$method   = $this->get_reflective_method( 'update_db_version', TableUpgrader::class );
 		$upgrader = $this->createMocks( true, true );
-
-		$method->invoke( $upgrader );
+		$this->invokeMethod( 'update_db_version', $upgrader );
 	}
 
 	public function testShouldUpdateSiteVersion() {
-		$method   = $this->get_reflective_method( 'update_db_version', TableUpgrader::class );
 		$upgrader = $this->createMocks( false, true );
-
-		$method->invoke( $upgrader );
+		$this->invokeMethod( 'update_db_version', $upgrader );
 
 		$upgrader = $this->createMocks( true, false );
-
-		$method->invoke( $upgrader );
+		$this->invokeMethod( 'update_db_version', $upgrader );
 
 		$upgrader = $this->createMocks( false, false );
-
-		$method->invoke( $upgrader );
+		$this->invokeMethod( 'update_db_version', $upgrader );
 	}
 
 	public function createMocks( $is_table_global, $is_multisite ) {
