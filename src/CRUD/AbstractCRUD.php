@@ -20,7 +20,6 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  *
  * @since 0.1
  * @uses  $GLOBALS['wpdb']
- * @uses  esc_sql()
  * @uses  maybe_unserialize()
  * @uses  maybe_serialize()
  */
@@ -93,12 +92,12 @@ abstract class AbstractCRUD implements CRUDInterface {
 
 	/**
 	 * Prepare a list of column names to be used in a query as SELECT fields.
-	 * This will lowercase the column names, remove invalid fields, escape, and create a comma separated list.
+	 * This will lowercase the column names, remove invalid fields, trim quotes, and create a comma separated list.
 	 *
 	 * @since 0.1
 	 *
 	 * @param  array<string> $select A list of column names. Use [ '*' ] to get all columns.
-	 * @return string|null           A comma separated list of fields. Null if the list is empty.
+	 * @return string|null           A comma separated list of fields, each wrapped in backticks. Null if the list is empty.
 	 */
 	protected function prepare_select_for_query( array $select ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoReturnType
 		if ( empty( $select ) ) {
@@ -111,6 +110,25 @@ abstract class AbstractCRUD implements CRUDInterface {
 			return '*';
 		}
 
+		// Trim quotes, backticks, and empty spaces.
+		$select = array_map(
+			function( string $column_name ): string {
+				return trim( $column_name, "'\"` \t\n\r\0\x0B" );
+			},
+			$select
+		);
+		// Remove empty names.
+		$select = array_filter(
+			$select,
+			function( string $column_name ): bool {
+				return '' !== $column_name;
+			}
+		);
+
+		if ( empty( $select ) ) {
+			return null;
+		}
+
 		$column_names = array_keys( $this->table_definition->get_column_placeholders() );
 		$select       = array_map( 'strtolower', $select );
 		$select       = array_intersect( $select, $column_names );
@@ -119,7 +137,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 			return null;
 		}
 
-		return implode( ',', esc_sql( $select ) );
+		return sprintf( '`%s`', implode( '`,`', $select ) );
 	}
 
 	/**
@@ -160,6 +178,7 @@ abstract class AbstractCRUD implements CRUDInterface {
 	protected function get_placeholders( array $columns ): array {
 		$formats = $this->table_definition->get_column_placeholders();
 		$formats = array_intersect_key( $formats, $columns );
+		$columns = array_intersect_key( $columns, $formats );
 
 		return array_merge( $columns, $formats );
 	}
@@ -217,6 +236,10 @@ abstract class AbstractCRUD implements CRUDInterface {
 				return maybe_unserialize( $value );
 			}
 			return $this->get_default_value( $column );
+		}
+
+		if ( is_numeric( $value ) ) {
+			return "$value";
 		}
 
 		return $value;
@@ -300,7 +323,6 @@ abstract class AbstractCRUD implements CRUDInterface {
 		$serialized_data = array_map(
 			function( $value ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType, NeutronStandard.Functions.TypeHint.NoReturnType
 				// Try not to store empty serialized arrays.
-				$casted = (array) $value;
 				return empty( $value ) ? null : maybe_serialize( $value );
 			},
 			$serialized_data
