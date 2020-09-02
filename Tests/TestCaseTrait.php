@@ -70,12 +70,13 @@ trait TestCaseTrait {
 	 *
 	 * @param string|object $class  Class name for a static method, or instance for an instance method.
 	 * @param string        $method Method name for which to gain access.
+	 * @param array         $args   List of args to pass to the method.
 	 *
 	 * @return mixed                The method result.
 	 * @throws ReflectionException  Throws an exception upon failure.
 	 *
 	 */
-	protected function invokeMethod( $class, $method ) {
+	protected function invokeMethod( $class, $method, $args = [] ) {
 		if ( is_string( $class ) ) {
 			$class_name = $class;
 		} else {
@@ -84,7 +85,7 @@ trait TestCaseTrait {
 
 		$method = $this->get_reflective_method( $class_name, $method );
 
-		return $method->invoke( $class );
+		return $method->invokeArgs( $class, $args );
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
