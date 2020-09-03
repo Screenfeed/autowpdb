@@ -19,7 +19,6 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  * Abstract class that contains some tools to help interacting with the DB table.
  *
  * @since 0.1
- * @uses  $GLOBALS['wpdb']
  * @uses  maybe_unserialize()
  * @uses  maybe_serialize()
  */
@@ -66,8 +65,6 @@ abstract class AbstractCRUD implements CRUDInterface {
 	 * @param TableDefinitionInterface $table_definition A TableDefinitionInterface object.
 	 */
 	public function __construct( TableDefinitionInterface $table_definition ) {
-		global $wpdb;
-
 		$this->table_definition = $table_definition;
 	}
 
