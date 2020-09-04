@@ -6,10 +6,10 @@ use Screenfeed\AutoWPDB\Tests\Fixtures\src\Table\CustomTable;
 use Screenfeed\AutoWPDB\Tests\Integration\TestCase;
 
 /**
- * Tests for AbstractTableDefinition::get_table_definition().
+ * Tests for AbstractCRUD::get_table_definition().
  *
- * @covers AbstractTableDefinition::get_table_definition
- * @group  AbstractTableDefinition
+ * @covers AbstractCRUD::get_table_definition
+ * @group  AbstractCRUD
  */
 class Test_GetTableDefinition extends TestCase {
 
