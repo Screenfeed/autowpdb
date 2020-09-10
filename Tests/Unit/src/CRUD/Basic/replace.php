@@ -77,7 +77,7 @@ class Test_Replace extends TestCase {
 			->expects( $this->once() )
 			->method( 'replace' )
 			->with( $this->table_name, $data_to_insert, $placeholders )
-			->willReturn( true );
+			->willReturn( 1 );
 		$wpdb->insert_id = '4';
 
 		$definition = $this->getMockBuilder( CustomTable::class )

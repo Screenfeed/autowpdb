@@ -16,8 +16,6 @@ class Test_CopyTo extends TestCase {
 	protected $drop_target_table = true;
 
 	public function testShouldCloneTable() {
-		global $wpdb;
-
 		$this->create_table();
 		$row1_id = $this->add_row( 'foobar' );
 		$row2_id = $this->add_row( 'barbaz' );
@@ -45,8 +43,6 @@ class Test_CopyTo extends TestCase {
 	}
 
 	public function testShouldNotCloneTableWhenItDoesNotExist() {
-		global $wpdb;
-
 		$table  = new Table( new CustomTable() );
 		$result = $table->copy_to( $this->target_table_name );
 

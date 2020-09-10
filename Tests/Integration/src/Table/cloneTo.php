@@ -41,8 +41,6 @@ class Test_CloneTo extends TestCase {
 	}
 
 	public function testShouldNotCloneTableWhenItDoesNotExist() {
-		global $wpdb;
-
 		$table  = new Table( new CustomTable() );
 		$result = $table->clone_to( $this->target_table_name );
 
