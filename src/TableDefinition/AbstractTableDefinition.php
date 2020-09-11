@@ -33,7 +33,7 @@ abstract class AbstractTableDefinition implements TableDefinitionInterface, Json
 
 	/**
 	 * Full name of the static class to use to perform the operations.
-	 * Default is '\Screenfeed\AutoWPDB\DBUtilities'.
+	 * Default is 'Screenfeed\AutoWPDB\DBUtilities'.
 	 *
 	 * @var   string
 	 * @since 0.3
@@ -45,7 +45,7 @@ abstract class AbstractTableDefinition implements TableDefinitionInterface, Json
 	 *
 	 * @since 0.3
 	 *
-	 * @param string $table_worker Full name of the static class to use to perform the operations. Default is '\Screenfeed\AutoWPDB\DBUtilities'.
+	 * @param string $table_worker Full name of the static class to use to perform the operations. Default is 'Screenfeed\AutoWPDB\DBUtilities'.
 	 */
 	public function __construct( string $table_worker = '' ) {
 		$this->table_worker = ! empty( $table_worker ) ? ltrim( $table_worker, '\\' ) : DBUtilities::class;

@@ -31,7 +31,7 @@ class Table {
 
 	/**
 	 * Full name of the static class to use to perform the operations.
-	 * Default is '\Screenfeed\AutoWPDB\DBUtilities'.
+	 * Default is 'Screenfeed\AutoWPDB\DBUtilities'.
 	 *
 	 * @var   string
 	 * @since 0.3
@@ -44,7 +44,7 @@ class Table {
 	 * @since 0.2
 	 *
 	 * @param TableDefinitionInterface $table_definition A TableDefinitionInterface object.
-	 * @param string                   $table_worker     Full name of the static class to use to perform the operations. Default is '\Screenfeed\AutoWPDB\DBUtilities'.
+	 * @param string                   $table_worker     Full name of the static class to use to perform the operations. Default is 'Screenfeed\AutoWPDB\DBUtilities'.
 	 */
 	public function __construct( TableDefinitionInterface $table_definition, string $table_worker = '' ) {
 		$this->table_definition = $table_definition;
