@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Screenfeed\AutoWPDB\TableDefinition;
 
+use Screenfeed\AutoWPDB\DBWorker\WorkerInterface;
+
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
 
 /**
@@ -127,4 +129,13 @@ interface TableDefinitionInterface {
 	 * @return string
 	 */
 	public function get_table_schema(): string;
+
+	/**
+	 * Get the instance of the class used to perform the operations.
+	 *
+	 * @since 0.3
+	 *
+	 * @return WorkerInterface
+	 */
+	public function get_table_worker(): WorkerInterface;
 }

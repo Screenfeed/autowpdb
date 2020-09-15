@@ -9,7 +9,7 @@ namespace Screenfeed\AutoWPDB\Tests\Integration\src\TableUpgrader;
 
 use Screenfeed\AutoWPDB\Table;
 use Screenfeed\AutoWPDB\TableUpgrader;
-use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesIntegration;
+use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBWorker\Worker\WorkerIntegration as Worker;
 use Screenfeed\AutoWPDB\Tests\Fixtures\src\Table\CustomTable;
 use Screenfeed\AutoWPDB\Tests\Integration\TemporaryTableTrait;
 use Screenfeed\AutoWPDB\Tests\Integration\TestCase as BaseTestCase;
@@ -53,7 +53,7 @@ abstract class TestCase extends BaseTestCase {
 	/** ----------------------------------------------------------------------------------------- */
 
 	protected function init( $args = [], $table_def = [] ) {
-		$this->table_def = new CustomTable();
+		$this->table_def = new CustomTable( new Worker() );
 
 		if ( ! empty( $table_def ) ) {
 			foreach ( $table_def as $prop => $value ) {
@@ -62,7 +62,7 @@ abstract class TestCase extends BaseTestCase {
 			}
 		}
 
-		$this->table    = new Table( $this->table_def, DBUtilitiesIntegration::class );
+		$this->table    = new Table( $this->table_def );
 		$this->upgrader = new TableUpgrader( $this->table, $args );
 	}
 

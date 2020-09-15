@@ -39,16 +39,10 @@ class Test_Get extends TestCase {
 	}
 
 	public function testShouldReturnNullWhenInvalidReturnType() {
-		$this->prepared    = "SELECT `file_id`,`path`,`data` FROM `{$this->table_name}`";
-		$this->output_type = 'unknown';
-		$this->raw_rows    = null;
+		$definition = new CustomTable();
+		$table      = new Basic( $definition );
 
-		$this->mockWpdb( false );
-
-		Functions\expect( 'maybe_unserialize' )->never();
-
-		$table  = $this->getTable();
-		$result = $table->get( [ 'file_id', 'path', 'data' ], [], $this->output_type );
+		$result = $table->get( [ 'file_id', 'path', 'data' ], [], 'unknown' );
 
 		$this->assertNull( $result );
 	}

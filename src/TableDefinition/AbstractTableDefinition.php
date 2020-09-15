@@ -10,7 +10,8 @@ declare( strict_types=1 );
 namespace Screenfeed\AutoWPDB\TableDefinition;
 
 use JsonSerializable;
-use Screenfeed\AutoWPDB\DBUtilities;
+use Screenfeed\AutoWPDB\DBWorker\Worker;
+use Screenfeed\AutoWPDB\DBWorker\WorkerInterface;
 
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
 
@@ -32,10 +33,10 @@ abstract class AbstractTableDefinition implements TableDefinitionInterface, Json
 	protected $full_table_name;
 
 	/**
-	 * Full name of the static class to use to perform the operations.
-	 * Default is 'Screenfeed\AutoWPDB\DBUtilities'.
+	 * Instance of the class to use to perform the operations.
+	 * Default is Worker.
 	 *
-	 * @var   string
+	 * @var   WorkerInterface
 	 * @since 0.3
 	 */
 	protected $table_worker;
@@ -45,10 +46,14 @@ abstract class AbstractTableDefinition implements TableDefinitionInterface, Json
 	 *
 	 * @since 0.3
 	 *
-	 * @param string $table_worker Full name of the static class to use to perform the operations. Default is 'Screenfeed\AutoWPDB\DBUtilities'.
+	 * @param WorkerInterface $table_worker Instance of the class to use to perform the operations. Default is Worker.
 	 */
-	public function __construct( string $table_worker = '' ) {
-		$this->table_worker = ! empty( $table_worker ) ? ltrim( $table_worker, '\\' ) : DBUtilities::class;
+	public function __construct( $table_worker = null ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType
+		if ( ! empty( $table_worker ) && $table_worker instanceof WorkerInterface ) {
+			$this->table_worker = $table_worker;
+		} else {
+			$this->table_worker = new Worker();
+		}
 	}
 
 	/**
@@ -67,9 +72,20 @@ abstract class AbstractTableDefinition implements TableDefinitionInterface, Json
 
 		$prefix = $this->is_table_global() ? $wpdb->base_prefix : $wpdb->prefix;
 
-		$this->full_table_name = $prefix . $this->table_worker::sanitize_table_name( $this->get_table_short_name() );
+		$this->full_table_name = $prefix . $this->table_worker->sanitize_table_name( $this->get_table_short_name() );
 
 		return $this->full_table_name;
+	}
+
+	/**
+	 * Get the instance of the class used to perform the operations.
+	 *
+	 * @since 0.3
+	 *
+	 * @return WorkerInterface
+	 */
+	public function get_table_worker(): WorkerInterface {
+		return $this->table_worker;
 	}
 
 	/**

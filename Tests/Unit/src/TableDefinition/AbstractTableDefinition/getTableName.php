@@ -1,8 +1,8 @@
 <?php
 namespace Screenfeed\AutoWPDB\Tests\Unit\src\TableDefinition\AbstractTableDefinition;
 
+use Screenfeed\AutoWPDB\DBWorker\Worker;
 use Screenfeed\AutoWPDB\TableDefinition\AbstractTableDefinition;
-use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesUnit;
 use Screenfeed\AutoWPDB\Tests\Unit\TestCase;
 
 /**
@@ -40,13 +40,16 @@ class Test_GetTableName extends TestCase {
 			'prefix'      => $this->site_prefix,
 		];
 
-		DBUtilitiesUnit::set_mocks( [
-			'sanitize_table_name' => function( $table_name ) {
-				return $table_name;
-			}
-		] );
+		$worker = $this->getMockBuilder( Worker::class )
+			->setMethods( [ 'sanitize_table_name' ] )
+			->getMock();
+		$worker
+			->expects( $this->once() )
+			->method( 'sanitize_table_name' )
+			->withAnyParameters()
+			->willReturnArgument( 0 );
 
-		$table = $this->getMockForAbstractClass( AbstractTableDefinition::class, [ DBUtilitiesUnit::class ] );
+		$table = $this->getMockForAbstractClass( AbstractTableDefinition::class, [ $worker ] );
 		$table
 			->expects( $this->once() )
 			->method( 'is_table_global' )

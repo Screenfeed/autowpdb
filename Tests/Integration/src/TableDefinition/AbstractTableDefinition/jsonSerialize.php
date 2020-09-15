@@ -5,7 +5,7 @@ use Screenfeed\AutoWPDB\Tests\Fixtures\src\Table\CustomTable;
 use Screenfeed\AutoWPDB\Tests\Integration\TestCase;
 
 /**
- * Tests for AbstractTableDefinition::jsonSerialize().
+ * Tests for AbstractTableDefinition->jsonSerialize().
  *
  * @covers AbstractTableDefinition::jsonSerialize
  * @group  AbstractTableDefinition

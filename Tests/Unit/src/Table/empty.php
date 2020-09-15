@@ -1,9 +1,9 @@
 <?php
 namespace Screenfeed\AutoWPDB\Tests\Unit\src\Table;
 
+use Screenfeed\AutoWPDB\DBWorker\Worker;
 use Screenfeed\AutoWPDB\Table;
 use Screenfeed\AutoWPDB\TableDefinition\TableDefinitionInterface;
-use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesUnit;
 use Screenfeed\AutoWPDB\Tests\Unit\TestCase;
 
 /**
@@ -15,20 +15,26 @@ use Screenfeed\AutoWPDB\Tests\Unit\TestCase;
 class Test_Empty extends TestCase {
 
 	public function testShouldReturnNumberOfDeletedRows() {
+		$worker = $this->getMockBuilder( Worker::class )
+			->setMethods( [ 'empty_table' ] )
+			->getMock();
+		$worker
+			->expects( $this->once() )
+			->method( 'empty_table' )
+			->with( 'custom_table' )
+			->willReturn( 3 );
+
 		$table_definition = $this->createMock( TableDefinitionInterface::class );
 		$table_definition
 			->expects( $this->once() )
 			->method( 'get_table_name' )
 			->willReturn( 'custom_table' );
+		$table_definition
+			->expects( $this->once() )
+			->method( 'get_table_worker' )
+			->willReturn( $worker );
 
-		DBUtilitiesUnit::set_mocks( [
-			'empty_table' => function( $table_name ) {
-				$this->assertSame( 'custom_table', $table_name );
-				return 3;
-			},
-		] );
-
-		$table  = new Table( $table_definition, DBUtilitiesUnit::class );
+		$table  = new Table( $table_definition );
 		$result = $table->empty();
 
 		$this->assertSame( 3, $result );

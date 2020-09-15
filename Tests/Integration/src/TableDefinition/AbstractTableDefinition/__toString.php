@@ -5,7 +5,7 @@ use Screenfeed\AutoWPDB\Tests\Fixtures\src\Table\CustomTable;
 use Screenfeed\AutoWPDB\Tests\Integration\TestCase;
 
 /**
- * Tests for AbstractTableDefinition::__toString().
+ * Tests for AbstractTableDefinition->__toString().
  *
  * @covers AbstractTableDefinition::__toString
  * @group  AbstractTableDefinition

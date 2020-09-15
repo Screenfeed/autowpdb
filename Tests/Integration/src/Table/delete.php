@@ -2,7 +2,7 @@
 namespace Screenfeed\AutoWPDB\Tests\Integration\src\Table;
 
 use Screenfeed\AutoWPDB\Table;
-use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBUtilitiesIntegration;
+use Screenfeed\AutoWPDB\Tests\Fixtures\src\DBWorker\Worker\WorkerIntegration as Worker;
 use Screenfeed\AutoWPDB\Tests\Fixtures\src\Table\CustomTable;
 use Screenfeed\AutoWPDB\Tests\Integration\src\Table\TestCase;
 
@@ -18,7 +18,7 @@ class Test_Delete extends TestCase {
 	public function testShouldReturnTrue() {
 		$this->createTemporaryTable();
 
-		$table  = new Table( new CustomTable(), DBUtilitiesIntegration::class );
+		$table  = new Table( new CustomTable( new Worker() ) );
 		$result = $table->delete(
 			[
 				'logger' => [ $this, 'log' ],
@@ -32,7 +32,7 @@ class Test_Delete extends TestCase {
 	public function testShouldReturnFalse() {
 		$error = "Deletion of the DB table {$this->table_name} failed.";
 
-		$table  = new Table( new CustomTable(), DBUtilitiesIntegration::class );
+		$table  = new Table( new CustomTable( new Worker() ) );
 		$result = $table->delete(
 			[
 				'logger' => [ $this, 'log' ],
@@ -47,7 +47,7 @@ class Test_Delete extends TestCase {
 	public function testShouldFailWithoutLogging() {
 		remove_filter( 'screenfeed_autowpdb_can_log', [ $this, 'return_true' ] );
 
-		$table  = new Table( new CustomTable(), DBUtilitiesIntegration::class );
+		$table  = new Table( new CustomTable( new Worker() ) );
 		$result = $table->delete(
 			[
 				'logger' => [ $this, 'log' ],

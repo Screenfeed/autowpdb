@@ -5,7 +5,7 @@ use Screenfeed\AutoWPDB\Tests\Fixtures\src\Table\CustomTable;
 use Screenfeed\AutoWPDB\Tests\Integration\TestCase;
 
 /**
- * Tests for AbstractTableDefinition::get_table_name().
+ * Tests for AbstractTableDefinition->get_table_name().
  *
  * @covers AbstractTableDefinition::get_table_name
  * @group  AbstractTableDefinition
