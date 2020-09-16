@@ -18,7 +18,7 @@ Requires **php 7.0** and **WordPress 4.9.6**. With php 7.1+, can be used with Wo
 
 With composer:
 
-```
+```json
 "require": {
 	"screenfeed/autowpdb": "dev-master"
 },
@@ -26,9 +26,27 @@ With composer:
 
 ## How to use
 
-Create 2 classes and you’re ready:
+Create 1 or 2 classes and you're ready:
 
 * One that "defines" your custom table (name, default values, value types, schema, etc) by extending *TableDefinition\AbstractTableDefinition*,
-* One containing your CRUD methods (optional) by extending *CRUD\Basic*.
+* Optionally, one containing your CRUD methods by extending *CRUD\Basic*.
+
+Example:
+
+```php
+use Screenfeed\AutoWPDB\Table;
+use Screenfeed\AutoWPDB\TableUpgrader;
+
+add_action( 'plugins_loaded', 'my_plugin_init' );
+
+function my_plugin_init() {
+	// Your class defining your custom DB table.
+	$table_def = new MyCustomTableDefinition();
+
+	// The upgrader: it will upgrade your DB table automatically if the schema changes.
+	$upgrader = new TableUpgrader( new Table( $table_def ) );
+	$upgrader->init();
+}
+```
 
 Please take a look at [this plugin](https://github.com/Screenfeed/autowpdb-example-plugin) to see an example of use.

@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Screenfeed\AutoWPDB;
 
-use Screenfeed\AutoWPDB\DBUtilities;
 use Screenfeed\AutoWPDB\TableDefinition\TableDefinitionInterface;
 
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
@@ -18,7 +17,6 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  * Class to work with a table.
  *
  * @since 0.2
- * @uses  DBUtilities
  */
 class Table {
 
@@ -65,7 +63,7 @@ class Table {
 	 * @return bool True on success. False otherwise.
 	 */
 	public function create( array $args = [] ): bool {
-		return DBUtilities::create_table( $this->table_definition->get_table_name(), $this->table_definition->get_table_schema(), $args );
+		return $this->table_definition->get_table_worker()->create_table( $this->table_definition->get_table_name(), $this->table_definition->get_table_schema(), $args );
 	}
 
 	/**
@@ -76,7 +74,7 @@ class Table {
 	 * @return bool
 	 */
 	public function exists(): bool {
-		return DBUtilities::table_exists( $this->table_definition->get_table_name() );
+		return $this->table_definition->get_table_worker()->table_exists( $this->table_definition->get_table_name() );
 	}
 
 	/**
@@ -92,7 +90,7 @@ class Table {
 	 * @return bool True on success. False otherwise.
 	 */
 	public function delete( array $args = [] ): bool {
-		return DBUtilities::delete_table( $this->table_definition->get_table_name(), $args );
+		return $this->table_definition->get_table_worker()->delete_table( $this->table_definition->get_table_name(), $args );
 	}
 
 	/**
@@ -105,7 +103,7 @@ class Table {
 	 * @return bool True on success. False otherwise.
 	 */
 	public function reinit(): bool {
-		return DBUtilities::reinit_table( $this->table_definition->get_table_name() );
+		return $this->table_definition->get_table_worker()->reinit_table( $this->table_definition->get_table_name() );
 	}
 
 	/**
@@ -120,7 +118,7 @@ class Table {
 	 * @return int Number of deleted rows.
 	 */
 	public function empty(): int {
-		return DBUtilities::empty_table( $this->table_definition->get_table_name() );
+		return $this->table_definition->get_table_worker()->empty_table( $this->table_definition->get_table_name() );
 	}
 
 	/**
@@ -132,13 +130,13 @@ class Table {
 	 * @return bool                   True on success. False otherwise.
 	 */
 	public function clone_to( string $new_table_name ): bool {
-		$new_table_name = DBUtilities::sanitize_table_name( $new_table_name );
+		$new_table_name = $this->table_definition->get_table_worker()->sanitize_table_name( $new_table_name );
 
-		if ( empty( $new_table_name ) ) {
+		if ( null === $new_table_name ) {
 			return false;
 		}
 
-		return DBUtilities::clone_table( $this->table_definition->get_table_name(), $new_table_name );
+		return $this->table_definition->get_table_worker()->clone_table( $this->table_definition->get_table_name(), $new_table_name );
 	}
 
 	/**
@@ -150,13 +148,13 @@ class Table {
 	 * @return int                    Number of inserted rows.
 	 */
 	public function copy_to( string $new_table_name ): int {
-		$new_table_name = DBUtilities::sanitize_table_name( $new_table_name );
+		$new_table_name = $this->table_definition->get_table_worker()->sanitize_table_name( $new_table_name );
 
-		if ( empty( $new_table_name ) ) {
+		if ( null === $new_table_name ) {
 			return 0;
 		}
 
-		return DBUtilities::copy_table( $this->table_definition->get_table_name(), $new_table_name );
+		return $this->table_definition->get_table_worker()->copy_table( $this->table_definition->get_table_name(), $new_table_name );
 	}
 
 	/**
@@ -168,6 +166,18 @@ class Table {
 	 * @return int            Number of rows.
 	 */
 	public function count( string $column = '*' ): int {
-		return DBUtilities::count_table_rows( $this->table_definition->get_table_name(), $column );
+		return $this->table_definition->get_table_worker()->count_table_rows( $this->table_definition->get_table_name(), $column );
+	}
+
+	/**
+	 * Get the DB’s last error.
+	 * This is merely a wrapper to get $wpdb->last_error.
+	 *
+	 * @since 0.3
+	 *
+	 * @return string The error message. An empty string if there is no error.
+	 */
+	public function get_last_error(): string {
+		return $this->table_definition->get_table_worker()->get_last_error();
 	}
 }

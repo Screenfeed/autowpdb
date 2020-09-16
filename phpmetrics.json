@@ -5,5 +5,10 @@
 	"report": {
 		"html": "report"
 	},
+	"plugins": {
+		"junit": {
+			"report": "report/junit.xml"
+		}
+	},
 	"extensions": [ "php" ]
 }

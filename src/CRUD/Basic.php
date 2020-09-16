@@ -55,6 +55,7 @@ class Basic extends AbstractCRUD {
 
 	/**
 	 * Replace a row in the table if it exists or insert a new row in the table if the row did not already exist.
+	 * Always include a PRIMARY KEY or a UNIQUE index in `$data`, this is used to decide if the row exists.
 	 * Missing values will fall back to default values.
 	 *
 	 * @since 0.1
@@ -91,9 +92,9 @@ class Basic extends AbstractCRUD {
 	 *
 	 * @param  array<string> $select      A list of column names. Use [ '*' ] to get all columns.
 	 * @param  array<mixed>  $where       A named array of WHERE clauses (in column -> value pairs). Multiple clauses will be joined with ANDs.
-	 * @param  string        $output_type Optional. Any of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.
-	 *                                    With one of the first three, return an array of rows indexed from 0 by SQL result row number.
-	 *                                    Each row is an associative array (column => value, ...), a numerically indexed array (0 => value, ...), or an object. (->column = value), respectively.
+	 * @param  string        $output_type Optional. Any of ARRAY_A | OBJECT | OBJECT_K constants.
+	 *                                    With one of the first two, return an array of rows indexed from 0 by SQL result row number.
+	 *                                    Each row is an associative array (column => value, ...), or an object (->column = value), respectively.
 	 *                                    With OBJECT_K, return an associative array of row objects keyed by the value of each row's first column's value.
 	 *                                    Duplicate keys are discarded.
 	 * @return array<mixed>|null          An array or an object, depending on $output_type.
@@ -105,6 +106,10 @@ class Basic extends AbstractCRUD {
 		$select = $this->prepare_select_for_query( $select );
 
 		if ( null === $select ) {
+			return null;
+		}
+
+		if ( ! in_array( $output_type, [ ARRAY_A, OBJECT, OBJECT_K ], true ) ) {
 			return null;
 		}
 

@@ -7,7 +7,7 @@
 
 declare( strict_types=1 );
 
-namespace Screenfeed\AutoWPDB;
+namespace Screenfeed\AutoWPDB\DBWorker;
 
 defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
 
@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit; // @phpstan-ignore-line
  * @uses  remove_accents()
  * @uses  sanitize_key()
  */
-class DBUtilities {
+class Worker implements WorkerInterface {
 
 	/**
 	 * Create/Upgrade a table in the database.
@@ -40,7 +40,7 @@ class DBUtilities {
 	 * }
 	 * @return bool                       True on success. False otherwise.
 	 */
-	public static function create_table( string $table_name, string $schema_query, array $args = [] ): bool {
+	public function create_table( string $table_name, string $schema_query, array $args = [] ): bool {
 		global $wpdb;
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -54,15 +54,15 @@ class DBUtilities {
 
 		if ( ! empty( $wpdb->last_error ) ) {
 			// The query returned an error.
-			if ( static::can_log( $logger ) ) {
+			if ( $this->can_log( $logger ) ) {
 				call_user_func( $logger, sprintf( 'Error while creating the DB table %s: %s', $table_name, $wpdb->last_error ) );
 			}
 			return false;
 		}
 
-		if ( ! self::table_exists( $table_name ) ) {
+		if ( ! $this->table_exists( $table_name ) ) {
 			// The table does not exist (wtf).
-			if ( static::can_log( $logger ) ) {
+			if ( $this->can_log( $logger ) ) {
 				call_user_func( $logger, sprintf( 'Creation of the DB table %s failed.', $table_name ) );
 			}
 			return false;
@@ -79,12 +79,14 @@ class DBUtilities {
 	 * @param  string $table_name Full name of the table (with DB prefix). Use `sanitize_table_name()` before passing it to this method.
 	 * @return bool
 	 */
-	public static function table_exists( string $table_name ): bool {
+	public function table_exists( string $table_name ): bool {
 		global $wpdb;
 
-		$table_name = $wpdb->esc_like( $table_name );
-		$query      = "SHOW TABLES LIKE `$table_name`";
-		$result     = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->hide_errors();
+
+		$esc_table_name = $wpdb->esc_like( $table_name );
+		$query          = "SHOW TABLES LIKE '$esc_table_name'";
+		$result         = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return ( $result === $table_name );
 	}
@@ -103,17 +105,19 @@ class DBUtilities {
 	 * }
 	 * @return bool                     True on success. False otherwise.
 	 */
-	public static function delete_table( string $table_name, array $args = [] ): bool {
+	public function delete_table( string $table_name, array $args = [] ): bool {
 		global $wpdb;
+
+		$wpdb->hide_errors();
 
 		$logger = $args['logger'] ?? 'error_log';
 
 		$query  = "DROP TABLE `$table_name`";
 		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		if ( true !== $result || self::table_exists( $table_name ) ) {
+		if ( true !== $result || $this->table_exists( $table_name ) ) {
 			// The table still exists.
-			if ( static::can_log( $logger ) ) {
+			if ( $this->can_log( $logger ) ) {
 				call_user_func( $logger, sprintf( 'Deletion of the DB table %s failed.', $table_name ) );
 			}
 			return false;
@@ -133,8 +137,10 @@ class DBUtilities {
 	 * @param  string $table_name Full name of the table (with DB prefix). Use `sanitize_table_name()` before passing it to this method.
 	 * @return bool               True on success. False otherwise.
 	 */
-	public static function reinit_table( string $table_name ): bool {
+	public function reinit_table( string $table_name ): bool {
 		global $wpdb;
+
+		$wpdb->hide_errors();
 
 		$query  = "TRUNCATE TABLE `$table_name`";
 		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -155,8 +161,10 @@ class DBUtilities {
 	 * @param  string $table_name Full name of the table (with DB prefix). Use `sanitize_table_name()` before passing it to this method.
 	 * @return int                Number of deleted rows.
 	 */
-	public static function empty_table( string $table_name ): int {
+	public function empty_table( string $table_name ): int {
 		global $wpdb;
+
+		$wpdb->hide_errors();
 
 		$query = "DELETE FROM `$table_name`";
 
@@ -173,8 +181,10 @@ class DBUtilities {
 	 * @param  string $new_table_name Full name of the new table (with DB prefix). Use `sanitize_table_name()` before passing it to this method.
 	 * @return bool                   True on success. False otherwise.
 	 */
-	public static function clone_table( string $table_name, string $new_table_name ): bool {
+	public function clone_table( string $table_name, string $new_table_name ): bool {
 		global $wpdb;
+
+		$wpdb->hide_errors();
 
 		$query  = "CREATE TABLE `$new_table_name` LIKE `$table_name`";
 		$result = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -192,8 +202,10 @@ class DBUtilities {
 	 * @param  string $new_table_name Full name of the new table (with DB prefix). Use `sanitize_table_name()` before passing it to this method.
 	 * @return int                    Number of inserted rows.
 	 */
-	public static function copy_table( string $table_name, string $new_table_name ): int {
+	public function copy_table( string $table_name, string $new_table_name ): int {
 		global $wpdb;
+
+		$wpdb->hide_errors();
 
 		$query = "INSERT INTO `$new_table_name` SELECT * FROM `$table_name`";
 
@@ -210,11 +222,13 @@ class DBUtilities {
 	 * @param  string $column     Name of the column to use in `COUNT()`. Optional, default is `*`.
 	 * @return int                Number of rows.
 	 */
-	public static function count_table_rows( string $table_name, string $column = '*' ): int {
+	public function count_table_rows( string $table_name, string $column = '*' ): int {
 		global $wpdb;
 
 		$prefix = '';
 		$column = trim( $column );
+
+		$wpdb->hide_errors();
 
 		if ( preg_match( '@^DISTINCT\s+(?<column>[^\s]+)$@i', $column, $matches ) ) {
 			$prefix = 'DISTINCT ';
@@ -228,6 +242,20 @@ class DBUtilities {
 		$query = "SELECT COUNT($column) FROM `$table_name`";
 
 		return (int) $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	}
+
+	/**
+	 * Get the DB's last error.
+	 * This is merely a wrapper to get $wpdb->last_error.
+	 *
+	 * @since 0.3
+	 *
+	 * @return string The error message. An empty string if there is no error.
+	 */
+	public function get_last_error(): string {
+		global $wpdb;
+
+		return ! empty( $wpdb->last_error ) ? (string) $wpdb->last_error : '';
 	}
 
 	/**
@@ -248,8 +276,8 @@ class DBUtilities {
 	 * @param  string $table_name The name of the database table.
 	 * @return string|null        Sanitized database table name. Null on error.
 	 */
-	public static function sanitize_table_name( string $table_name ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoReturnType
-		if ( empty( $table_name ) ) {
+	public function sanitize_table_name( string $table_name ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoReturnType
+		if ( '' === $table_name ) {
 			return null;
 		}
 
@@ -267,14 +295,14 @@ class DBUtilities {
 		// Single underscores only.
 		$table_name = preg_replace( '@_{2,}@', '_', $table_name );
 
-		if ( empty( $table_name ) ) {
+		if ( '' === $table_name || null === $table_name ) {
 			return null;
 		}
 
 		// Remove trailing underscores.
 		$table_name = trim( $table_name, '_' );
 
-		if ( empty( $table_name ) ) {
+		if ( '' === $table_name ) {
 			return null;
 		}
 
@@ -283,55 +311,60 @@ class DBUtilities {
 
 	/**
 	 * Change an array of values into a comma separated list, ready to be used in a `IN ()` clause.
+	 * WARNING: works only with numeric and string values. Numeric values won't be quoted ('23' will become 23), so they will not be listed as strings.
 	 *
 	 * @since 0.1
 	 *
 	 * @param  array<mixed> $values An array of values.
 	 * @return string               A comma separated list of values.
 	 */
-	public static function prepare_values_list( array $values ): string {
-		$values = esc_sql( (array) $values );
-		$values = array_map( [ __CLASS__, 'quote_string' ], $values );
+	public function prepare_values_list( array $values ): string {
+		$values = esc_sql( $values );
+		$values = array_map(
+			function ( $value ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType, NeutronStandard.Functions.TypeHint.NoReturnType
+				return $this->quote_string( $value );
+			},
+			$values
+		);
 		return implode( ',', $values );
 	}
 
 	/**
-	 * Wrap a value in quotes, unless it is a numeric value.
+	 * Wrap a value in (simple) quotes, unless it is a numeric value.
+	 * WARNING: string values must have simple quotes already escaped.
 	 *
 	 * @since 0.1
 	 *
 	 * @param  mixed $value A value.
 	 * @return mixed
 	 */
-	public static function quote_string( $value ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType, NeutronStandard.Functions.TypeHint.NoReturnType
-		return is_numeric( $value ) || ! is_string( $value ) ? $value : "'" . addcslashes( $value, "'" ) . "'";
+	public function quote_string( $value ) { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType, NeutronStandard.Functions.TypeHint.NoReturnType
+		return is_numeric( $value ) || ! is_string( $value ) ? $value : "'$value'";
 	}
 
 	/**
-	 * Wrap a value in quotes, unless it is a numeric value.
+	 * Tell if we can log, depending if some constants are set and if the log callback is callable.
 	 *
 	 * @since 0.2
 	 *
-	 * @param  callable|false $logger Callback to use to log errors. The error message is passed to the callback as 1st argument. False to disable log.
+	 * @param  callable|false $logger Callback to use to log messages. The message is passed to the callback as 1st argument. False to disable log.
 	 * @return bool
 	 */
-	protected static function can_log( $logger ): bool { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType
-		if ( empty( $logger ) ) {
+	protected function can_log( $logger ): bool { // phpcs:ignore NeutronStandard.Functions.TypeHint.NoArgumentType
+		if ( empty( $logger ) || ! is_callable( $logger ) ) {
 			return false;
 		}
 
-		if ( ! defined( 'WP_DEBUG' ) || empty( WP_DEBUG ) ) {
-			return false;
-		}
+		$can_log = defined( 'WP_DEBUG' ) && ! empty( WP_DEBUG ) && defined( 'WP_DEBUG_LOG' ) && ! empty( WP_DEBUG_LOG );
 
-		if ( ! defined( 'WP_DEBUG_LOG' ) || empty( WP_DEBUG_LOG ) ) {
-			return false;
-		}
-
-		if ( ! is_callable( $logger ) ) {
-			return false;
-		}
-
-		return true;
+		/**
+		 * Tell if we can log, depending if some constants are set.
+		 *
+		 * @since 0.3
+		 *
+		 * @param bool     $can_log True when allowed to log. False otherwise.
+		 * @param callable $logger  Callback to use to log messages.
+		 */
+		return (bool) apply_filters( 'screenfeed_autowpdb_can_log', $can_log, $logger );
 	}
 }
