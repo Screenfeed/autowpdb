@@ -43,7 +43,7 @@ function my_plugin_init() {
 	// Your class defining your custom DB table.
 	$table_def = new MyCustomTableDefinition();
 
-	// The upgrader: it will upgrade your DB table automatically if the schema changes.
+	// The upgrader: it will upgrade your DB table automatically if its version changes.
 	$upgrader = new TableUpgrader( new Table( $table_def ) );
 	$upgrader->init();
 }

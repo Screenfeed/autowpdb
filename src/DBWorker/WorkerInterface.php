@@ -126,7 +126,6 @@ interface WorkerInterface {
 
 	/**
 	 * Get the DB's last error.
-	 * This is merely a wrapper to get $wpdb->last_error.
 	 *
 	 * @since 0.3
 	 *
